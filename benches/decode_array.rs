@@ -1,7 +1,7 @@
 use std::hint::black_box;
 
 use divan::Bencher;
-use valence::protocol::{Decode, Encode};
+use kanden::protocol::{Decode, Encode};
 
 #[divan::bench]
 pub(crate) fn decode_small_array(bencher: Bencher) {

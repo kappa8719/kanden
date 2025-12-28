@@ -11,17 +11,17 @@ use bytes::{BufMut, BytesMut};
 use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::RwLock;
 use tokio::task::JoinHandle;
-use valence_protocol::decode::PacketFrame;
-use valence_protocol::packets::handshake::intention_c2s::HandShakeIntent;
-use valence_protocol::packets::handshake::IntentionC2s;
-use valence_protocol::packets::login::{
+use kanden_protocol::decode::PacketFrame;
+use kanden_protocol::packets::handshake::intention_c2s::HandShakeIntent;
+use kanden_protocol::packets::handshake::IntentionC2s;
+use kanden_protocol::packets::login::{
     HelloS2c, LoginCompressionS2c, LoginDisconnectS2c, LoginFinishedS2c,
 };
-use valence_protocol::packets::{configuration, play};
-use valence_protocol::text::color::NamedColor;
-use valence_protocol::text::{Color, IntoText};
-use valence_protocol::{
-    CompressionThreshold, Decode, Encode, JsonText, Packet as ValencePacket, PacketSide,
+use kanden_protocol::packets::{configuration, play};
+use kanden_protocol::text::color::NamedColor;
+use kanden_protocol::text::{Color, IntoText};
+use kanden_protocol::{
+    CompressionThreshold, Decode, Encode, JsonText, Packet as KandenPacket, PacketSide,
     PacketState,
 };
 
@@ -317,7 +317,7 @@ impl Proxy {
 
 fn extrapolate_packet<'a, P>(packet: &'a PacketFrame) -> Option<P>
 where
-    P: ValencePacket + Decode<'a> + Clone,
+    P: KandenPacket + Decode<'a> + Clone,
 {
     if packet.id != P::ID {
         return None;

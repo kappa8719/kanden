@@ -1,6 +1,6 @@
 use egui::{RichText, TextEdit, Ui, Widget};
 use itertools::Itertools;
-use valence_protocol::PacketState;
+use kanden_protocol::PacketState;
 
 use super::{SharedState, Tab, View};
 use crate::tri_checkbox::{TriCheckbox, TriCheckboxState};

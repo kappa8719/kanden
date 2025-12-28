@@ -2,9 +2,9 @@
 
 use rand::seq::IteratorRandom;
 use rand::Rng;
-use valence::prelude::*;
-use valence::registry::biome::BiomeEffects;
-use valence_server::BiomePos;
+use kanden::prelude::*;
+use kanden::registry::biome::BiomeEffects;
+use kanden_server::BiomePos;
 
 const SPAWN_Y: i32 = 0;
 const SIZE: i32 = 5;

@@ -2,7 +2,7 @@ use std::hint::black_box;
 
 use divan::Bencher;
 use rand::Rng;
-use valence::protocol::{Decode, Encode, VarInt};
+use kanden::protocol::{Decode, Encode, VarInt};
 
 #[divan::bench]
 fn varint_encode(bencher: Bencher) {

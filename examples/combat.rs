@@ -2,9 +2,9 @@
 
 use bevy_ecs::query::QueryData;
 use rand::Rng;
-use valence::entity::EntityStatuses;
-use valence::math::Vec3Swizzles;
-use valence::prelude::*;
+use kanden::entity::EntityStatuses;
+use kanden::math::Vec3Swizzles;
+use kanden::prelude::*;
 
 const SPAWN_Y: i32 = 64;
 const ARENA_RADIUS: i32 = 32;

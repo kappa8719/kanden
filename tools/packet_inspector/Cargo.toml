@@ -12,7 +12,7 @@ publish = false
 workspace = true
 
 [dependencies]
-valence_protocol = { workspace = true, features = ["compression"] }
+kanden_protocol = { workspace = true, features = ["compression"] }
 anyhow.workspace = true
 thiserror.workspace = true
 bytes.workspace = true
@@ -42,4 +42,4 @@ proc-macro2.workspace = true
 quote.workspace = true
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
-valence_build_utils.workspace = true
+kanden_build_utils.workspace = true

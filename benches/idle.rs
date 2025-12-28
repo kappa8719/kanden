@@ -1,5 +1,5 @@
 use divan::Bencher;
-use valence::prelude::*;
+use kanden::prelude::*;
 
 /// Benches the performance of a single server tick while nothing much is
 /// happening.

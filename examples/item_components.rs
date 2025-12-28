@@ -1,5 +1,5 @@
-use valence::item::ItemComponent;
-use valence::prelude::*;
+use kanden::item::ItemComponent;
+use kanden::prelude::*;
 
 fn main() {
     App::new()

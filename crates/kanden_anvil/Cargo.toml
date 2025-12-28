@@ -1,0 +1,30 @@
+[package]
+name = "kanden_anvil"
+description = "Anvil file format support for Kanden"
+readme = "README.md"
+keywords = ["anvil", "minecraft", "deserialization"]
+version = "0.1.0"
+edition.workspace = true
+repository.workspace = true
+documentation.workspace = true
+license.workspace = true
+
+[lints]
+workspace = true
+
+[features]
+bevy_plugin = ["dep:bevy_app", "dep:bevy_ecs", "dep:flume", "parsing"]
+parsing = ["dep:kanden_server"]
+
+[dependencies]
+bevy_app = { workspace = true, optional = true }
+bevy_ecs = { workspace = true, optional = true }
+bitfield-struct.workspace = true
+bitvec.workspace = true
+byteorder.workspace = true
+flate2.workspace = true
+flume = { workspace = true, optional = true }
+lru.workspace = true
+thiserror.workspace = true
+kanden_nbt = { workspace = true, features = ["binary"] }
+kanden_server = { workspace = true, optional = true }

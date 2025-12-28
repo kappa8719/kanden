@@ -3,20 +3,20 @@
 use std::collections::HashMap;
 
 use bevy_ecs::query::QueryData;
-use valence::entity::cow::CowEntityBundle;
-use valence::entity::entity::Flags;
-use valence::entity::living::Health;
-use valence::entity::pig::PigEntityBundle;
-use valence::entity::player::PlayerEntityBundle;
-use valence::entity::{EntityAnimations, EntityStatuses, OnGround, Velocity};
-use valence::interact_block::InteractBlockEvent;
-use valence::inventory::HeldItem;
-use valence::log::debug;
-use valence::math::Vec3Swizzles;
-use valence::nbt::{compound, List};
-use valence::prelude::*;
-use valence::scoreboard::*;
-use valence::status::RequestRespawnEvent;
+use kanden::entity::cow::CowEntityBundle;
+use kanden::entity::entity::Flags;
+use kanden::entity::living::Health;
+use kanden::entity::pig::PigEntityBundle;
+use kanden::entity::player::PlayerEntityBundle;
+use kanden::entity::{EntityAnimations, EntityStatuses, OnGround, Velocity};
+use kanden::interact_block::InteractBlockEvent;
+use kanden::inventory::HeldItem;
+use kanden::log::debug;
+use kanden::math::Vec3Swizzles;
+use kanden::nbt::{compound, List};
+use kanden::prelude::*;
+use kanden::scoreboard::*;
+use kanden::status::RequestRespawnEvent;
 
 const ARENA_Y: i32 = 64;
 const ARENA_MID_WIDTH: i32 = 2;
@@ -397,7 +397,7 @@ fn init_clients(
         health.0 = PLAYER_MAX_HEALTH;
 
         client.send_chat_message(
-            "Welcome to Valence! Select a team by jumping in the team's portal.".italic(),
+            "Welcome to Kanden! Select a team by jumping in the team's portal.".italic(),
         );
     }
 }

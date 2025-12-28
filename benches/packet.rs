@@ -2,15 +2,15 @@ use std::borrow::Cow;
 use std::hint::black_box;
 
 use divan::Bencher;
-use valence::prelude::*;
-use valence::protocol::decode::PacketDecoder;
-use valence::protocol::encode::{PacketEncoder, PacketWriter, WritePacket};
-use valence::protocol::packets::play::level_chunk_with_light_s2c::{HeightMap, HeightMapKind};
-use valence::protocol::packets::play::{AddEntityS2c, LevelChunkWithLightS2c, TabListS2c};
-use valence::protocol::{ByteAngle, FixedArray, VarInt};
-use valence::text::IntoText;
-use valence_server::protocol::Velocity;
-use valence_server::CompressionThreshold;
+use kanden::prelude::*;
+use kanden::protocol::decode::PacketDecoder;
+use kanden::protocol::encode::{PacketEncoder, PacketWriter, WritePacket};
+use kanden::protocol::packets::play::level_chunk_with_light_s2c::{HeightMap, HeightMapKind};
+use kanden::protocol::packets::play::{AddEntityS2c, LevelChunkWithLightS2c, TabListS2c};
+use kanden::protocol::{ByteAngle, FixedArray, VarInt};
+use kanden::text::IntoText;
+use kanden_server::protocol::Velocity;
+use kanden_server::CompressionThreshold;
 
 pub(crate) fn setup<'a>() -> (
     PacketEncoder,

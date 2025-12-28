@@ -1,7 +1,7 @@
 //! Put stuff in here if you find that you have to write the same code for
 //! multiple playgrounds.
 
-use valence::prelude::*;
+use kanden::prelude::*;
 
 /// Toggles client's game mode between survival and creative when they start
 /// sneaking.

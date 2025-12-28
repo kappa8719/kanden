@@ -17,7 +17,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
 
     eframe::run_native(
-        "Valence Packet Inspector",
+        "Kanden Packet Inspector",
         native_options,
         Box::new(move |cc| {
             let gui_app = app::GuiApp::new(cc);
@@ -48,7 +48,7 @@ fn load_icon() -> IconData {
 }
 pub(crate) mod utils {
     use packet_inspector::Packet as ProxyPacket;
-    use valence_protocol::{Decode, Packet};
+    use kanden_protocol::{Decode, Packet};
 
     include!(concat!(env!("OUT_DIR"), "/packet_to_string.rs"));
 }

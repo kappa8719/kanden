@@ -4,7 +4,7 @@ use egui::{
     WidgetText,
 };
 use packet_inspector::Packet;
-use valence_protocol::PacketSide;
+use kanden_protocol::PacketSide;
 
 use super::{SharedState, Tab, View};
 

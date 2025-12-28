@@ -1,7 +1,7 @@
-use valence::entity::player::PlayerEntityBundle;
-use valence::player_list::{DisplayName, Listed, PlayerListEntryBundle};
-use valence::prelude::*;
-use valence::text::IntoText;
+use kanden::entity::player::PlayerEntityBundle;
+use kanden::player_list::{DisplayName, Listed, PlayerListEntryBundle};
+use kanden::prelude::*;
+use kanden::text::IntoText;
 
 const SPAWN_Y: i32 = 64;
 

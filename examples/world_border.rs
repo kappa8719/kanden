@@ -1,11 +1,11 @@
 #![allow(clippy::type_complexity)]
 
 use bevy_app::App;
-use valence::client::despawn_disconnected_clients;
-use valence::inventory::HeldItem;
-use valence::message::{ChatMessageEvent, SendMessage};
-use valence::prelude::*;
-use valence::world_border::*;
+use kanden::client::despawn_disconnected_clients;
+use kanden::inventory::HeldItem;
+use kanden::message::{ChatMessageEvent, SendMessage};
+use kanden::prelude::*;
+use kanden::world_border::*;
 
 const SPAWN_Y: i32 = 64;
 

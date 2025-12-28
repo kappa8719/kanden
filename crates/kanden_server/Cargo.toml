@@ -1,0 +1,35 @@
+[package]
+name = "kanden_server"
+description = "The core of the Kanden server"
+readme = "README.md"
+version.workspace = true
+edition.workspace = true
+repository.workspace = true
+documentation.workspace = true
+license.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+anyhow.workspace = true
+bevy_app.workspace = true
+bevy_ecs.workspace = true
+bevy_utils.workspace = true          # Needed for `ScheduleLabel` derive macro.
+bitfield-struct.workspace = true
+bytes.workspace = true
+derive_more = { workspace = true, features = ["deref", "deref_mut", "from", "into"] }
+kanden_math.workspace = true
+rand.workspace = true
+tracing.workspace = true
+uuid.workspace = true
+byteorder.workspace = true
+kanden_server_common.workspace = true
+kanden_entity.workspace = true
+kanden_nbt.workspace = true
+kanden_registry.workspace = true
+kanden_protocol.workspace = true
+kanden_generated.workspace = true
+rustc-hash.workspace = true
+parking_lot.workspace = true
+arrayvec.workspace = true

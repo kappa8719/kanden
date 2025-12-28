@@ -7,15 +7,15 @@ use bevy_app::prelude::*;
 use bevy_ecs::prelude::*;
 use bytes::{Buf, BufMut, BytesMut};
 use uuid::Uuid;
-use valence_ident::ident;
-use valence_network::NetworkPlugin;
-use valence_registry::{BiomeRegistry, DimensionTypeRegistry};
-use valence_server::client::{ClientBundle, ClientBundleArgs, ClientConnection, ReceivedPacket};
-use valence_server::keepalive::KeepaliveSettings;
-use valence_server::protocol::decode::PacketFrame;
-use valence_server::protocol::packets::play::{AcceptTeleportationC2s, PlayerPositionS2c};
-use valence_server::protocol::{Decode, Encode, Packet, PacketDecoder, PacketEncoder, VarInt};
-use valence_server::{ChunkLayer, EntityLayer, Server, ServerSettings};
+use kanden_ident::ident;
+use kanden_network::NetworkPlugin;
+use kanden_registry::{BiomeRegistry, DimensionTypeRegistry};
+use kanden_server::client::{ClientBundle, ClientBundleArgs, ClientConnection, ReceivedPacket};
+use kanden_server::keepalive::KeepaliveSettings;
+use kanden_server::protocol::decode::PacketFrame;
+use kanden_server::protocol::packets::play::{AcceptTeleportationC2s, PlayerPositionS2c};
+use kanden_server::protocol::{Decode, Encode, Packet, PacketDecoder, PacketEncoder, VarInt};
+use kanden_server::{ChunkLayer, EntityLayer, Server, ServerSettings};
 
 use crate::DefaultPlugins;
 pub struct ScenarioSingleClient {
@@ -30,7 +30,7 @@ pub struct ScenarioSingleClient {
 }
 
 impl ScenarioSingleClient {
-    /// Sets up Valence with a single mock client and entity+chunk layer. The
+    /// Sets up Kanden with a single mock client and entity+chunk layer. The
     /// client is configured to be placed within the layer.
     ///
     /// Reduces boilerplate in unit tests.

@@ -1,7 +1,7 @@
-use valence_server::entity::living::Health;
-use valence_server::entity::player::{Food, Saturation};
-use valence_server::protocol::packets::play::SetHealthS2c;
-use valence_server::protocol::VarInt;
+use kanden_server::entity::living::Health;
+use kanden_server::entity::player::{Food, Saturation};
+use kanden_server::protocol::packets::play::SetHealthS2c;
+use kanden_server::protocol::VarInt;
 
 use crate::testing::ScenarioSingleClient;
 

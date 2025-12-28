@@ -1,0 +1,15 @@
+[package]
+name = "kanden_math"
+description = "Math for Kanden"
+readme = "README.md"
+version.workspace = true
+edition.workspace = true
+repository.workspace = true
+documentation.workspace = true
+license.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+glam.workspace = true

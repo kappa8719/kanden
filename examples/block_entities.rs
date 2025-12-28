@@ -1,9 +1,9 @@
 #![allow(clippy::type_complexity)]
 
-use valence::interact_block::InteractBlockEvent;
-use valence::message::ChatMessageEvent;
-use valence::nbt::{compound, List};
-use valence::prelude::*;
+use kanden::interact_block::InteractBlockEvent;
+use kanden::message::ChatMessageEvent;
+use kanden::nbt::{compound, List};
+use kanden::prelude::*;
 
 const FLOOR_Y: i32 = 64;
 const SIGN_POS: [i32; 3] = [3, FLOOR_Y + 1, 2];

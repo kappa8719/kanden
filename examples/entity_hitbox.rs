@@ -5,15 +5,15 @@ use std::collections::HashMap;
 use bevy_app::prelude::*;
 use bevy_ecs::prelude::*;
 use entity::NameVisible;
-use valence::entity::hoglin::HoglinEntityBundle;
-use valence::entity::pig::PigEntityBundle;
-use valence::entity::sheep::SheepEntityBundle;
-use valence::entity::warden::WardenEntityBundle;
-use valence::entity::zombie::ZombieEntityBundle;
-use valence::entity::zombie_horse::ZombieHorseEntityBundle;
-use valence::entity::{entity, Pose};
-use valence::prelude::*;
-use valence::rand::Rng;
+use kanden::entity::hoglin::HoglinEntityBundle;
+use kanden::entity::pig::PigEntityBundle;
+use kanden::entity::sheep::SheepEntityBundle;
+use kanden::entity::warden::WardenEntityBundle;
+use kanden::entity::zombie::ZombieEntityBundle;
+use kanden::entity::zombie_horse::ZombieHorseEntityBundle;
+use kanden::entity::{entity, Pose};
+use kanden::prelude::*;
+use kanden::rand::Rng;
 
 pub fn main() {
     App::new()

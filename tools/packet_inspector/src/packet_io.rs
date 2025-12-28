@@ -5,9 +5,9 @@ use anyhow::ensure;
 use bytes::{BufMut, BytesMut};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpStream;
-use valence_protocol::decode::{PacketDecoder, PacketFrame};
-use valence_protocol::encode::PacketEncoder;
-use valence_protocol::{CompressionThreshold, Encode, VarInt, MAX_PACKET_SIZE};
+use kanden_protocol::decode::{PacketDecoder, PacketFrame};
+use kanden_protocol::encode::PacketEncoder;
+use kanden_protocol::{CompressionThreshold, Encode, VarInt, MAX_PACKET_SIZE};
 
 pub(crate) struct PacketIoReader {
     reader: tokio::io::ReadHalf<tokio::net::TcpStream>,

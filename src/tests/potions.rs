@@ -1,7 +1,7 @@
-use valence_server::entity::active_status_effects::{ActiveStatusEffect, ActiveStatusEffects};
-use valence_server::protocol::packets::play::{RemoveMobEffectS2c, UpdateMobEffectS2c};
-use valence_server::protocol::status_effects::StatusEffect;
-use valence_server::protocol::VarInt;
+use kanden_server::entity::active_status_effects::{ActiveStatusEffect, ActiveStatusEffects};
+use kanden_server::protocol::packets::play::{RemoveMobEffectS2c, UpdateMobEffectS2c};
+use kanden_server::protocol::status_effects::StatusEffect;
+use kanden_server::protocol::VarInt;
 
 use crate::testing::ScenarioSingleClient;
 

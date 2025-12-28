@@ -3,8 +3,8 @@ use std::sync::RwLock;
 
 use bytes::Bytes;
 use time::OffsetDateTime;
-use valence_protocol::decode::PacketFrame;
-use valence_protocol::{CompressionThreshold, PacketSide, PacketState};
+use kanden_protocol::decode::PacketFrame;
+use kanden_protocol::{CompressionThreshold, PacketSide, PacketState};
 
 pub struct PacketRegistry {
     packets: RwLock<Vec<Packet>>,

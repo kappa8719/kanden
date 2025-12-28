@@ -1,5 +1,5 @@
-use valence::log::LogPlugin;
-use valence::prelude::*;
+use kanden::log::LogPlugin;
+use kanden::prelude::*;
 
 #[allow(unused_imports)]
 use crate::extras::*;

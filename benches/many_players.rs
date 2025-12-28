@@ -3,18 +3,18 @@ use std::time::Duration;
 use bevy_app::prelude::*;
 use divan::Bencher;
 use rand::Rng;
-use valence::entity::Position;
-use valence::keepalive::KeepaliveSettings;
-use valence::layer::chunk::UnloadedChunk;
-use valence::layer::LayerBundle;
-use valence::math::DVec3;
-use valence::network::NetworkPlugin;
-use valence::protocol::movement_flags::MovementFlags;
-use valence::protocol::packets::play::{MovePlayerPosRotC2s, SwingC2s};
-use valence::registry::{BiomeRegistry, DimensionTypeRegistry};
-use valence::testing::create_mock_client;
-use valence::{ident, ChunkPos, DefaultPlugins, Hand, Server, ServerSettings};
-use valence_server::CompressionThreshold;
+use kanden::entity::Position;
+use kanden::keepalive::KeepaliveSettings;
+use kanden::layer::chunk::UnloadedChunk;
+use kanden::layer::LayerBundle;
+use kanden::math::DVec3;
+use kanden::network::NetworkPlugin;
+use kanden::protocol::movement_flags::MovementFlags;
+use kanden::protocol::packets::play::{MovePlayerPosRotC2s, SwingC2s};
+use kanden::registry::{BiomeRegistry, DimensionTypeRegistry};
+use kanden::testing::create_mock_client;
+use kanden::{ident, ChunkPos, DefaultPlugins, Hand, Server, ServerSettings};
+use kanden_server::CompressionThreshold;
 
 #[divan::bench]
 fn many_players(bencher: Bencher) {

@@ -3,10 +3,10 @@
 use std::path::PathBuf;
 
 use clap::Parser;
-use valence::abilities::{FlyingSpeed, FovModifier, PlayerAbilitiesFlags};
-use valence::message::SendMessage;
-use valence::prelude::*;
-use valence_anvil::{AnvilLevel, ChunkLoadEvent, ChunkLoadStatus};
+use kanden::abilities::{FlyingSpeed, FovModifier, PlayerAbilitiesFlags};
+use kanden::message::SendMessage;
+use kanden::prelude::*;
+use kanden_anvil::{AnvilLevel, ChunkLoadEvent, ChunkLoadStatus};
 
 const SPAWN_POS: DVec3 = DVec3::new(0.0, 256.0, 0.0);
 

@@ -1,8 +1,8 @@
 use std::f64::consts::TAU;
 
-use valence::prelude::*;
-use valence::weather::{Rain, Thunder, WeatherBundle};
-use valence_server::nbt::{compound, List};
+use kanden::prelude::*;
+use kanden::weather::{Rain, Thunder, WeatherBundle};
+use kanden_server::nbt::{compound, List};
 
 pub fn main() {
     App::new()

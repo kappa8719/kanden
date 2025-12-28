@@ -7,13 +7,13 @@ use anyhow::{ensure, Context};
 use criterion::Criterion;
 use fs_extra::dir::CopyOptions;
 use reqwest::IntoUrl;
-use valence::anvil::AnvilWorld;
-use valence::instance::Chunk;
+use kanden::anvil::AnvilWorld;
+use kanden::instance::Chunk;
 use zip::ZipArchive;
 
 pub fn load(c: &mut Criterion) {
     let world_dir = get_world_asset(
-        "https://github.com/valence-rs/valence-test-data/archive/refs/heads/asset/sp_world_1.19.2.zip",
+        "https://github.com/kanden-rs/kanden-test-data/archive/refs/heads/asset/sp_world_1.19.2.zip",
         "1.19.2 benchmark world",
         true
     ).expect("failed to get world asset");
@@ -34,7 +34,7 @@ pub fn load(c: &mut Criterion) {
 
                     let mut chunk = Chunk::new(24);
 
-                    valence_anvil::to_valence(&nbt, &mut chunk, 4, |_| Default::default()).unwrap();
+                    kanden_anvil::to_kanden(&nbt, &mut chunk, 4, |_| Default::default()).unwrap();
 
                     black_box(chunk);
                 }

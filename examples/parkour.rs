@@ -5,9 +5,9 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 use rand::seq::SliceRandom;
 use rand::Rng;
-use valence::prelude::*;
-use valence::protocol::sound::{Sound, SoundCategory};
-use valence::spawn::IsFlat;
+use kanden::prelude::*;
+use kanden::protocol::sound::{Sound, SoundCategory};
+use kanden::spawn::IsFlat;
 
 const START_POS: BlockPos = BlockPos::new(0, 100, 0);
 const VIEW_DIST: u8 = 10;

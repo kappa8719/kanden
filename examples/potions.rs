@@ -1,15 +1,15 @@
 use rand::seq::SliceRandom;
 use rand::Rng;
-use valence::client::despawn_disconnected_clients;
-use valence::entity::active_status_effects::{ActiveStatusEffect, ActiveStatusEffects};
-use valence::log::LogPlugin;
-use valence::network::ConnectionMode;
-use valence::prelude::*;
-use valence::status_effects::{AttributeModifier, StatusEffect};
-use valence_server::entity::attributes::{EntityAttribute, EntityAttributes};
-use valence_server::entity::entity::Flags;
-use valence_server::entity::living::{Absorption, Health};
-use valence_server::status_effect::{StatusEffectAdded, StatusEffectRemoved};
+use kanden::client::despawn_disconnected_clients;
+use kanden::entity::active_status_effects::{ActiveStatusEffect, ActiveStatusEffects};
+use kanden::log::LogPlugin;
+use kanden::network::ConnectionMode;
+use kanden::prelude::*;
+use kanden::status_effects::{AttributeModifier, StatusEffect};
+use kanden_server::entity::attributes::{EntityAttribute, EntityAttributes};
+use kanden_server::entity::entity::Flags;
+use kanden_server::entity::living::{Absorption, Health};
+use kanden_server::status_effect::{StatusEffectAdded, StatusEffectRemoved};
 
 const SPAWN_Y: i32 = 64;
 

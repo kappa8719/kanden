@@ -6,7 +6,7 @@ use std::path::PathBuf;
 use std::process::{Command, Stdio};
 
 use clap::Parser;
-use valence::prelude::*;
+use kanden::prelude::*;
 
 #[derive(Parser)]
 #[command(author, version, about)]

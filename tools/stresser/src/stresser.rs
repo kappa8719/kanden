@@ -5,16 +5,16 @@ use anyhow::bail;
 use tokio::io::AsyncWriteExt;
 use tokio::net::TcpStream;
 use uuid::Uuid;
-use valence_protocol::movement_flags::MovementFlags;
-use valence_protocol::packets::handshake::intention_c2s::HandShakeIntent;
-use valence_protocol::packets::handshake::IntentionC2s;
-use valence_protocol::packets::login::{HelloC2s, HelloS2c, LoginCompressionS2c};
-use valence_protocol::packets::play::{
+use kanden_protocol::movement_flags::MovementFlags;
+use kanden_protocol::packets::handshake::intention_c2s::HandShakeIntent;
+use kanden_protocol::packets::handshake::IntentionC2s;
+use kanden_protocol::packets::login::{HelloC2s, HelloS2c, LoginCompressionS2c};
+use kanden_protocol::packets::play::{
     AcceptTeleportationC2s, KeepAliveC2s, KeepAliveS2c, LoginS2c, MovePlayerPosC2s,
     PlayerPositionS2c,
 };
-use valence_protocol::var_int::VarInt;
-use valence_protocol::{
+use kanden_protocol::var_int::VarInt;
+use kanden_protocol::{
     CompressionThreshold, Packet, PacketDecoder, PacketEncoder, PROTOCOL_VERSION,
 };
 

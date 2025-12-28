@@ -2,8 +2,8 @@
 
 use std::time::Instant;
 
-use valence::client::{VisibleChunkLayer, VisibleEntityLayers};
-use valence::prelude::*;
+use kanden::client::{VisibleChunkLayer, VisibleEntityLayers};
+use kanden::prelude::*;
 
 const SPAWN_Y: i32 = 64;
 

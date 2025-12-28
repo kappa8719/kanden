@@ -1,14 +1,14 @@
 #![allow(clippy::type_complexity)]
 
 use rand::seq::SliceRandom;
-use valence::prelude::*;
-use valence_boss_bar::{
+use kanden::prelude::*;
+use kanden_boss_bar::{
     BossBarBundle, BossBarColor, BossBarDivision, BossBarFlags, BossBarHealth, BossBarStyle,
     BossBarTitle,
 };
-use valence_server::entity::cow::CowEntityBundle;
-use valence_server::message::ChatMessageEvent;
-use valence_text::color::NamedColor;
+use kanden_server::entity::cow::CowEntityBundle;
+use kanden_server::message::ChatMessageEvent;
+use kanden_text::color::NamedColor;
 
 const SPAWN_Y: i32 = 64;
 
