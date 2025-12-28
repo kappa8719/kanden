@@ -1,3 +1,5 @@
+# Forked from [Valence](https://github.com/valence-rs/valence)
+
 <p align="center">
     <img src="https://raw.githubusercontent.com/kanden-rs/kanden/main/assets/logo-full.svg" width="650" align="center">
 </p>
@@ -33,21 +35,22 @@ in Minecraft such as minigame servers.
 
 Kanden aims to be the following:
 
-* **Complete**. Abstractions for the full breadth of the Minecraft protocol.
-* **Flexible**. Can easily extend Kanden from within user code. Direct access to the Minecraft protocol is provided.
-* **Modular**. Pick and choose the components you need.
-* **Intuitive**. An API that is easy to use and difficult to misuse. Extensive documentation and examples are important.
-* **Efficient**. Optimal use of system resources with multiple CPU cores in mind. Kanden uses very little memory and
+- **Complete**. Abstractions for the full breadth of the Minecraft protocol.
+- **Flexible**. Can easily extend Kanden from within user code. Direct access to the Minecraft protocol is provided.
+- **Modular**. Pick and choose the components you need.
+- **Intuitive**. An API that is easy to use and difficult to misuse. Extensive documentation and examples are important.
+- **Efficient**. Optimal use of system resources with multiple CPU cores in mind. Kanden uses very little memory and
   can
   support [thousands](https://raw.githubusercontent.com/kanden-rs/kanden/main/assets/many-players.png)
   of players at the same time without lag (assuming you have the bandwidth).
-* **Up to date**. Targets the most recent stable version of Minecraft. Support for multiple versions at once is not
+- **Up to date**. Targets the most recent stable version of Minecraft. Support for multiple versions at once is not
   planned. However, you can use a proxy with [ViaBackwards](https://www.spigotmc.org/resources/viabackwards.27448/) to
   achieve backwards compatibility with older clients.
 
 ## Current Status
 
 Here are some noteworthy achievements:
+
 - `kanden_nbt`: A speedy new library for Minecraft's Named Binary Tag (NBT) format.
 - Authentication, encryption, and compression
 - Block states
@@ -79,7 +82,7 @@ After cloning the repository, run this command to try an example.
 cargo r -r --example parkour
 ```
 
- I also recommend giving `game_of_life`, `terrain`, and `cow_sphere` a try.
+I also recommend giving `game_of_life`, `terrain`, and `cow_sphere` a try.
 
 Next, open your Minecraft client and connect to the address `localhost`.
 If all goes well you should be playing on the server.
