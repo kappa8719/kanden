@@ -51,7 +51,7 @@ cfb8 = "0.8.1"
 clap = { version = "4.5.17", features = ["derive"] }
 crc32c = "0.6.8"
 derive_more = "1.0.0"
-directories = "5.0.1"
+directories = "6.0.0"
 divan = "0.1.14"
 eframe = { version = "0.28.1" }
 egui = "0.28.1"
