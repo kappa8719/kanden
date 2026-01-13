@@ -37,7 +37,7 @@ macro_rules! flags {
 }
 
 flags! {
-    entity::Flags {
+    entity::DataSharedFlags {
         on_fire: 0,
         sneaking: 1,
         sprinting: 3,
@@ -46,16 +46,16 @@ flags! {
         glowing: 6,
         fall_flying: 7,
     }
-    persistent_projectile::ProjectileFlags {
+    abstract_arrow::Flags {
         critical: 0,
         no_clip: 1,
     }
-    living::LivingFlags {
+    living::DataLivingEntityFlags {
         using_item: 0,
         off_hand_active: 1,
         using_riptide: 2,
     }
-    player::PlayerModelParts {
+    avatar::DataPlayerModeCustomisation {
         cape: 0,
         jacket: 1,
         left_sleeve: 2,
@@ -64,24 +64,21 @@ flags! {
         right_pants_leg: 5,
         hat: 6,
     }
-    player::MainArm {
-        right: 0,
-    }
-    armor_stand::ArmorStandFlags {
+    armor_stand::DataClientFlags {
         small: 0,
         show_arms: 1,
         hide_base_plate: 2,
         marker: 3,
     }
-    mob::MobFlags {
+    mob::DataMobFlags {
         ai_disabled: 0,
         left_handed: 1,
         attacking: 2,
     }
-    bat::BatFlags {
+    bat::DataFlags {
         hanging: 0,
     }
-    abstract_horse::HorseFlags {
+    abstract_horse::DataFlags {
         tamed: 1,
         saddled: 2,
         bred: 3,
@@ -89,7 +86,7 @@ flags! {
         angry: 5,
         eating: 6,
     }
-    fox::FoxFlags {
+    fox::DataFlags {
         sitting: 0,
         crouching: 2,
         rolling_head: 3,
@@ -98,29 +95,29 @@ flags! {
         walking: 6,
         aggressive: 7,
     }
-    panda::PandaFlags {
+    panda::DataFlags {
         sneezing: 1,
         playing: 2,
         sitting: 3,
         lying_on_back: 4,
     }
-    tameable::TameableFlags {
+    tamable_animal::DataFlags {
         sitting_pose: 0,
         tamed: 2,
     }
-    iron_golem::IronGolemFlags {
+    iron_golem::DataFlags {
         player_created: 0,
     }
-    snow_golem::SnowGolemFlags {
+    snow_golem::DataPumpkin {
         has_pumpkin: 4,
     }
-    blaze::BlazeFlags {
+    blaze::DataFlags {
         fire_active: 0,
     }
-    vex::VexFlags {
+    vex::DataFlags {
         charging: 0,
     }
-    spider::SpiderFlags {
+    spider::DataFlags {
         climbing_wall: 0,
     }
 }
@@ -131,7 +128,7 @@ mod tests {
 
     #[test]
     fn get_set_flags() {
-        let mut flags = entity::Flags(0);
+        let mut flags = entity::DataSharedFlags(0);
 
         flags.set_on_fire(true);
         let before = flags.clone();

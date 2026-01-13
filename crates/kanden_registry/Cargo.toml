@@ -1,25 +1,26 @@
 [package]
 name = "kanden_registry"
-description = "Dynamic registries for Kanden"
-readme = "README.md"
 version.workspace = true
 edition.workspace = true
-repository.workspace = true
+description = "Dynamic registries for Kanden"
 documentation.workspace = true
+readme = "README.md"
+repository.workspace = true
 license.workspace = true
 
-[lints]
-workspace = true
-
 [dependencies]
+anyhow.workspace = true
 bevy_app.workspace = true
 bevy_ecs.workspace = true
 indexmap.workspace = true
-serde_json.workspace = true
-serde.workspace = true
-tracing.workspace = true
-kanden_protocol.workspace = true
-anyhow.workspace = true
+kanden_entity.workspace = true
 kanden_ident.workspace = true
 kanden_nbt = { workspace = true, features = ["serde"] }
+kanden_protocol.workspace = true
 kanden_server_common.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tracing.workspace = true
+
+[lints]
+workspace = true

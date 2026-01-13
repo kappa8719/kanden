@@ -1,0 +1,628 @@
+{
+  "types": {
+    "minecraft:custom_data": {
+      "id": 0,
+      "name": "custom_data",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:max_stack_size": {
+      "id": 1,
+      "name": "max_stack_size",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:max_damage": {
+      "id": 2,
+      "name": "max_damage",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:damage": {
+      "id": 3,
+      "name": "damage",
+      "ignoreSwapAnimation": true,
+      "isTransient": false
+    },
+    "minecraft:unbreakable": {
+      "id": 4,
+      "name": "unbreakable",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:use_effects": {
+      "id": 5,
+      "name": "use_effects",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:custom_name": {
+      "id": 6,
+      "name": "custom_name",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:minimum_attack_charge": {
+      "id": 7,
+      "name": "minimum_attack_charge",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:damage_type": {
+      "id": 8,
+      "name": "damage_type",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:item_name": {
+      "id": 9,
+      "name": "item_name",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:item_model": {
+      "id": 10,
+      "name": "item_model",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:lore": {
+      "id": 11,
+      "name": "lore",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:rarity": {
+      "id": 12,
+      "name": "rarity",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:enchantments": {
+      "id": 13,
+      "name": "enchantments",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:can_place_on": {
+      "id": 14,
+      "name": "can_place_on",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:can_break": {
+      "id": 15,
+      "name": "can_break",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:attribute_modifiers": {
+      "id": 16,
+      "name": "attribute_modifiers",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:custom_model_data": {
+      "id": 17,
+      "name": "custom_model_data",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:tooltip_display": {
+      "id": 18,
+      "name": "tooltip_display",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:repair_cost": {
+      "id": 19,
+      "name": "repair_cost",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:creative_slot_lock": {
+      "id": 20,
+      "name": "creative_slot_lock",
+      "ignoreSwapAnimation": false,
+      "isTransient": true
+    },
+    "minecraft:enchantment_glint_override": {
+      "id": 21,
+      "name": "enchantment_glint_override",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:intangible_projectile": {
+      "id": 22,
+      "name": "intangible_projectile",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:food": {
+      "id": 23,
+      "name": "food",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:consumable": {
+      "id": 24,
+      "name": "consumable",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:use_remainder": {
+      "id": 25,
+      "name": "use_remainder",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:use_cooldown": {
+      "id": 26,
+      "name": "use_cooldown",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:damage_resistant": {
+      "id": 27,
+      "name": "damage_resistant",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:tool": {
+      "id": 28,
+      "name": "tool",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:weapon": {
+      "id": 29,
+      "name": "weapon",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:attack_range": {
+      "id": 30,
+      "name": "attack_range",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:enchantable": {
+      "id": 31,
+      "name": "enchantable",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:equippable": {
+      "id": 32,
+      "name": "equippable",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:repairable": {
+      "id": 33,
+      "name": "repairable",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:glider": {
+      "id": 34,
+      "name": "glider",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:tooltip_style": {
+      "id": 35,
+      "name": "tooltip_style",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:death_protection": {
+      "id": 36,
+      "name": "death_protection",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:blocks_attacks": {
+      "id": 37,
+      "name": "blocks_attacks",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:piercing_weapon": {
+      "id": 38,
+      "name": "piercing_weapon",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:kinetic_weapon": {
+      "id": 39,
+      "name": "kinetic_weapon",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:swing_animation": {
+      "id": 40,
+      "name": "swing_animation",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:stored_enchantments": {
+      "id": 41,
+      "name": "stored_enchantments",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:dyed_color": {
+      "id": 42,
+      "name": "dyed_color",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:map_color": {
+      "id": 43,
+      "name": "map_color",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:map_id": {
+      "id": 44,
+      "name": "map_id",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:map_decorations": {
+      "id": 45,
+      "name": "map_decorations",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:map_post_processing": {
+      "id": 46,
+      "name": "map_post_processing",
+      "ignoreSwapAnimation": false,
+      "isTransient": true
+    },
+    "minecraft:charged_projectiles": {
+      "id": 47,
+      "name": "charged_projectiles",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:bundle_contents": {
+      "id": 48,
+      "name": "bundle_contents",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:potion_contents": {
+      "id": 49,
+      "name": "potion_contents",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:potion_duration_scale": {
+      "id": 50,
+      "name": "potion_duration_scale",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:suspicious_stew_effects": {
+      "id": 51,
+      "name": "suspicious_stew_effects",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:writable_book_content": {
+      "id": 52,
+      "name": "writable_book_content",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:written_book_content": {
+      "id": 53,
+      "name": "written_book_content",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:trim": {
+      "id": 54,
+      "name": "trim",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:debug_stick_state": {
+      "id": 55,
+      "name": "debug_stick_state",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:entity_data": {
+      "id": 56,
+      "name": "entity_data",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:bucket_entity_data": {
+      "id": 57,
+      "name": "bucket_entity_data",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:block_entity_data": {
+      "id": 58,
+      "name": "block_entity_data",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:instrument": {
+      "id": 59,
+      "name": "instrument",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:provides_trim_material": {
+      "id": 60,
+      "name": "provides_trim_material",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:ominous_bottle_amplifier": {
+      "id": 61,
+      "name": "ominous_bottle_amplifier",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:jukebox_playable": {
+      "id": 62,
+      "name": "jukebox_playable",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:provides_banner_patterns": {
+      "id": 63,
+      "name": "provides_banner_patterns",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:recipes": {
+      "id": 64,
+      "name": "recipes",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:lodestone_tracker": {
+      "id": 65,
+      "name": "lodestone_tracker",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:firework_explosion": {
+      "id": 66,
+      "name": "firework_explosion",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:fireworks": {
+      "id": 67,
+      "name": "fireworks",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:profile": {
+      "id": 68,
+      "name": "profile",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:note_block_sound": {
+      "id": 69,
+      "name": "note_block_sound",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:banner_patterns": {
+      "id": 70,
+      "name": "banner_patterns",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:base_color": {
+      "id": 71,
+      "name": "base_color",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:pot_decorations": {
+      "id": 72,
+      "name": "pot_decorations",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:container": {
+      "id": 73,
+      "name": "container",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:block_state": {
+      "id": 74,
+      "name": "block_state",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:bees": {
+      "id": 75,
+      "name": "bees",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:lock": {
+      "id": 76,
+      "name": "lock",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:container_loot": {
+      "id": 77,
+      "name": "container_loot",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:break_sound": {
+      "id": 78,
+      "name": "break_sound",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:villager/variant": {
+      "id": 79,
+      "name": "villager/variant",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:wolf/variant": {
+      "id": 80,
+      "name": "wolf/variant",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:wolf/sound_variant": {
+      "id": 81,
+      "name": "wolf/sound_variant",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:wolf/collar": {
+      "id": 82,
+      "name": "wolf/collar",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:fox/variant": {
+      "id": 83,
+      "name": "fox/variant",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:salmon/size": {
+      "id": 84,
+      "name": "salmon/size",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:parrot/variant": {
+      "id": 85,
+      "name": "parrot/variant",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:tropical_fish/pattern": {
+      "id": 86,
+      "name": "tropical_fish/pattern",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:tropical_fish/base_color": {
+      "id": 87,
+      "name": "tropical_fish/base_color",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:tropical_fish/pattern_color": {
+      "id": 88,
+      "name": "tropical_fish/pattern_color",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:mooshroom/variant": {
+      "id": 89,
+      "name": "mooshroom/variant",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:rabbit/variant": {
+      "id": 90,
+      "name": "rabbit/variant",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:pig/variant": {
+      "id": 91,
+      "name": "pig/variant",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:cow/variant": {
+      "id": 92,
+      "name": "cow/variant",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:chicken/variant": {
+      "id": 93,
+      "name": "chicken/variant",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:zombie_nautilus/variant": {
+      "id": 94,
+      "name": "zombie_nautilus/variant",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:frog/variant": {
+      "id": 95,
+      "name": "frog/variant",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:horse/variant": {
+      "id": 96,
+      "name": "horse/variant",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:painting/variant": {
+      "id": 97,
+      "name": "painting/variant",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:llama/variant": {
+      "id": 98,
+      "name": "llama/variant",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:axolotl/variant": {
+      "id": 99,
+      "name": "axolotl/variant",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:cat/variant": {
+      "id": 100,
+      "name": "cat/variant",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:cat/collar": {
+      "id": 101,
+      "name": "cat/collar",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:sheep/color": {
+      "id": 102,
+      "name": "sheep/color",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    },
+    "minecraft:shulker/color": {
+      "id": 103,
+      "name": "shulker/color",
+      "ignoreSwapAnimation": false,
+      "isTransient": false
+    }
+  }
+}

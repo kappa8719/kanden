@@ -12,12 +12,13 @@ use std::ops::{Deref, DerefMut};
 
 use bevy_app::prelude::*;
 use bevy_ecs::prelude::*;
-use serde::{Deserialize, Serialize};
-use tracing::error;
 use kanden_ident::{ident, Ident};
 use kanden_nbt::serde::ser::CompoundSerializer;
+use serde::{Deserialize, Serialize};
+use tracing::error;
 
 use crate::codec::{RegistryCodec, RegistryValue};
+use crate::serde::RGB;
 use crate::{Registry, RegistryIdx, RegistrySet};
 
 pub struct BiomePlugin;
@@ -32,10 +33,10 @@ impl Plugin for BiomePlugin {
 
 fn load_default_biomes(mut reg: ResMut<BiomeRegistry>, codec: Res<RegistryCodec>) {
     let mut helper = move || -> anyhow::Result<()> {
-        for value in codec.registry(BiomeRegistry::KEY) {
-            let biome = Biome::deserialize(value.element.clone())?;
+        for (name, element) in codec.registry(BiomeRegistry::KEY) {
+            let biome = Biome::deserialize(element.clone())?;
 
-            reg.insert(value.name.clone(), biome);
+            reg.insert(name.clone(), biome);
         }
 
         // Move "plains" to the front so that `BiomeId::default()` is the ID of plains.
@@ -56,12 +57,12 @@ fn update_biome_registry(reg: Res<BiomeRegistry>, mut codec: ResMut<RegistryCode
         biomes.clear();
 
         biomes.extend(reg.iter().map(|(_, name, biome)| {
-            RegistryValue {
-                name: name.into(),
-                element: biome
+            (
+                name.into(),
+                biome
                     .serialize(CompoundSerializer)
                     .expect("failed to serialize biome"),
-            }
+            )
         }));
     }
 }
@@ -143,17 +144,17 @@ pub struct BiomeEffects {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub particle: Option<BiomeParticle>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub sky_color: Option<u32>,
+    pub sky_color: Option<RGB>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub foliage_color: Option<u32>,
+    pub foliage_color: Option<RGB>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub grass_color: Option<u32>,
+    pub grass_color: Option<RGB>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub fog_color: Option<u32>,
+    pub fog_color: Option<RGB>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub water_color: Option<u32>,
+    pub water_color: Option<RGB>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub water_fog_color: Option<u32>,
+    pub water_fog_color: Option<RGB>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub grass_color_modifier: Option<String>,
 }
@@ -208,10 +209,10 @@ impl Default for BiomeEffects {
                 offset: 2.0,
             }),
             music_volume: Some(1.0),
-            sky_color: Some(7907327),
-            fog_color: Some(12638463),
-            water_color: Some(4159204),
-            water_fog_color: Some(329011),
+            sky_color: Some(RGB::new(0x78A7FF)),
+            fog_color: Some(RGB::new(0xC0D8FF)),
+            water_color: Some(RGB::new(0x3F76E4)),
+            water_fog_color: Some(RGB::new(0x050533)),
             additions_sound: None,
             music: Vec::new(),
             particle: None,

@@ -1,6 +1,9 @@
 #![allow(clippy::type_complexity)]
 
+use kanden::message::SendMessage;
 use kanden::prelude::*;
+use kanden::protocol::packets::play::RespawnS2c;
+use kanden::protocol::{GlobalPos, WritePacket};
 use kanden::status::RequestRespawnEvent;
 
 const SPAWN_Y: i32 = 64;
@@ -99,6 +102,7 @@ fn squat_and_die(mut clients: Query<&mut Client>, mut events: EventReader<SneakE
 
 fn necromancy(
     mut clients: Query<(
+        &mut Client,
         &mut EntityLayerId,
         &mut VisibleChunkLayer,
         &mut VisibleEntityLayers,
@@ -109,19 +113,24 @@ fn necromancy(
 ) {
     for event in events.read() {
         if let Ok((
+            mut client,
             mut layer_id,
             mut visible_chunk_layer,
             mut visible_entity_layers,
             mut respawn_pos,
         )) = clients.get_mut(event.client)
         {
-            respawn_pos.pos = BlockPos::new(0, SPAWN_Y, 0);
+            respawn_pos.pos = GlobalPos {
+                dimension_name: ident!("overworld").to_string_ident(),
+                position: BlockPos::new(0, SPAWN_Y + 10, 0),
+            };
 
             // make the client respawn in another chunk layer.
 
             let idx = layers.iter().position(|l| l == layer_id.0).unwrap();
             let count = layers.iter().len();
             let layer = layers.into_iter().nth((idx + 1) % count).unwrap();
+            // let layer = visible_chunk_layer.0;
 
             layer_id.0 = layer;
             visible_chunk_layer.0 = layer;

@@ -8,8 +8,6 @@ use std::ops::Range;
 use bevy_app::prelude::*;
 use bevy_ecs::prelude::*;
 use derive_more::{Deref, DerefMut};
-use player_inventory::PlayerInventory;
-use tracing::{debug, warn};
 use kanden_server::client::{Client, FlushPacketsSet, SpawnClientsSet};
 use kanden_server::event_loop::{EventLoopPreUpdate, PacketEvent};
 pub use kanden_server::protocol::packets::play::container_click_c2s::{ClickMode, SlotChange};
@@ -22,7 +20,9 @@ use kanden_server::protocol::packets::play::{
 };
 use kanden_server::protocol::{VarInt, WritePacket};
 use kanden_server::text::IntoText;
-use kanden_server::{GameMode, ItemKind, ItemStack, Text};
+use kanden_server::{GameMode, Hand, ItemKind, ItemStack, Text};
+use player_inventory::PlayerInventory;
+use tracing::{debug, warn};
 
 pub mod player_inventory;
 mod validate;
@@ -100,6 +100,16 @@ impl Inventory {
         self.slots
             .get(idx as usize)
             .expect("slot index out of range")
+    }
+
+    /// Get item in held item slot or off hand depending on hand
+    #[track_caller]
+    pub fn hand(&self, hand: Hand, held_item: &HeldItem) -> &ItemStack {
+        if hand == Hand::Main {
+            self.slot(held_item.slot())
+        } else {
+            self.slot(PlayerInventory::SLOT_OFFHAND)
+        }
     }
 
     /// Sets the slot at the given index to the given item stack.

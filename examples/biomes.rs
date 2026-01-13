@@ -1,10 +1,11 @@
 #![allow(clippy::type_complexity)]
 
-use rand::seq::IteratorRandom;
-use rand::Rng;
 use kanden::prelude::*;
 use kanden::registry::biome::BiomeEffects;
+use kanden_registry::serde::RGB;
 use kanden_server::BiomePos;
+use rand::seq::IteratorRandom;
+use rand::Rng;
 
 const SPAWN_Y: i32 = 0;
 const SIZE: i32 = 5;
@@ -40,7 +41,7 @@ fn setup(
 
         let biome = Biome {
             effects: BiomeEffects {
-                grass_color: Some(color),
+                grass_color: Some(RGB(color)),
                 ..Default::default()
             },
             ..Default::default()

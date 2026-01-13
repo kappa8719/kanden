@@ -1,8 +1,8 @@
 use heck::ToShoutySnakeCase;
+use kanden_build_utils::{ident, rerun_if_changed, write_generated_file};
 use proc_macro2::TokenStream;
 use quote::quote;
 use serde::Deserialize;
-use kanden_build_utils::{ident, rerun_if_changed, write_generated_file};
 
 pub fn main() -> anyhow::Result<()> {
     write_generated_file(build()?, "translation_keys.rs")
@@ -17,7 +17,7 @@ fn build() -> anyhow::Result<TokenStream> {
     let translation_key_consts = translations
         .iter()
         .map(|translation| {
-            let const_id = ident(translation.key.to_shouty_snake_case());
+            let const_id = ident(translation.key.to_lowercase().to_shouty_snake_case());
             let key = &translation.key;
             let english_translation = &translation.english_translation;
             let doc = format!("\"{}\"", escape(english_translation)).replace('`', "\\`");

@@ -4,11 +4,7 @@ Cargo.lock
 .idea
 *.iml
 .gradle
-/extractor/build
-/extractor/out
-/extractor/classes
-/extractor/run
-/extractor/bin
+/extractor
 rust-mc-bot
 .asset_cache/
 /velocity

@@ -4,106 +4,23 @@ version.workspace = true
 edition.workspace = true
 description = "A framework for building Minecraft servers in Rust."
 documentation.workspace = true
-repository.workspace = true
 readme = "README.md"
+repository.workspace = true
 license.workspace = true
-keywords = ["minecraft", "gamedev", "server", "ecs"]
+keywords = ["ecs", "gamedev", "minecraft", "server"]
 categories = ["game-engines"]
-include = ["/src", "/benches", "/examples", "/README.md", "/LICENSE.txt"]
-
-[lints]
-workspace = true
-
-[features]
-default = [
-    "advancement",
-    "anvil",
-    "boss_bar",
-    "inventory",
-    "log",
-    "network",
-    "player_list",
-    "scoreboard",
-    "world_border",
-    "command",
-    "weather",
-    "testing",
-]
-advancement = ["dep:kanden_advancement"]
-anvil = ["dep:kanden_anvil"]
-boss_bar = ["dep:kanden_boss_bar"]
-inventory = ["dep:kanden_inventory"]
-log = ["dep:bevy_log"]
-network = ["dep:kanden_network"]
-player_list = ["dep:kanden_player_list"]
-scoreboard = ["dep:kanden_scoreboard"]
-world_border = ["dep:kanden_world_border"]
-command = ["dep:kanden_command", "dep:kanden_command_macros"]
-weather = ["dep:kanden_weather"]
-testing = []
-
-[dependencies]
-anyhow.workspace = true
-bevy_app.workspace = true
-bevy_ecs.workspace = true
-bevy_log = { workspace = true, optional = true }
-bytes.workspace = true
-rand.workspace = true
-uuid.workspace = true
-kanden_advancement = { workspace = true, optional = true }
-kanden_anvil = { workspace = true, optional = true, features = [
-    "bevy_plugin",
-] }
-kanden_boss_bar = { workspace = true, optional = true }
-kanden_command = { workspace = true, optional = true }
-kanden_command_macros = { workspace = true, optional = true }
-kanden_ident_macros.workspace = true
-kanden_ident.workspace = true
-kanden_inventory = { workspace = true, optional = true }
-kanden_lang.workspace = true
-kanden_network = { workspace = true, optional = true }
-kanden_player_list = { workspace = true, optional = true }
-kanden_registry.workspace = true
-kanden_scoreboard = { workspace = true, optional = true }
-kanden_server.workspace = true
-kanden_text.workspace = true
-kanden_weather = { workspace = true, optional = true }
-kanden_world_border = { workspace = true, optional = true }
-crc32c = { workspace = true }
-
-[dev-dependencies]
-anyhow.workspace = true
-clap.workspace = true
-divan.workspace = true
-flume.workspace = true
-noise.workspace = true   # For the terrain example.
-tracing.workspace = true
-
-[dev-dependencies.reqwest]
-workspace = true
-default-features = false
-features = ["rustls-tls", "blocking", "stream"]
-
-[[bench]]
-name = "main"
-harness = false
-
-[profile.dev.package."*"]
-opt-level = 3
-
-[profile.dev]
-opt-level = 1
+include = ["/LICENSE.txt", "/README.md", "/benches", "/examples", "/src"]
 
 [workspace]
-members = ["crates/*", "tools/*"]
-exclude = []
 resolver = "2"
+members = ["crates/*", "tools/*"]
+exclude = ["tools/mapping_converter", "tools/packet_differ"]
 
 [workspace.package]
 version = "0.2.0-alpha.1+mc.1.20.1"
 edition = "2021"
-repository = "https://github.com/kanden-rs/kanden"
 documentation = "https://docs.rs/kanden/"
+repository = "https://github.com/kanden-rs/kanden"
 license = "MIT"
 
 [workspace.dependencies]
@@ -117,10 +34,10 @@ base64 = "0.22.1"
 bevy_app = { version = "0.14.2", default-features = false }
 bevy_derive = "0.14.2"
 bevy_ecs = { version = "0.14.2", default-features = false, features = [
-    "multi_threaded",
+  "multi_threaded",
 ] }
 bevy_hierarchy = { version = "0.14.2", default-features = false, features = [
-    "bevy_app",
+  "bevy_app",
 ] }
 bevy_log = { version = "0.14.2" }
 bevy_mod_debugdump = { version = "0.11.1" }
@@ -132,6 +49,7 @@ bytes = "1.7.1"
 cesu8 = "1.1.0"
 cfb8 = "0.8.1"
 clap = { version = "4.5.17", features = ["derive"] }
+crc32c = "0.6.8"
 derive_more = "1.0.0"
 directories = "5.0.1"
 divan = "0.1.14"
@@ -148,12 +66,41 @@ image = "0.25.2"
 indexmap = "2.5.0"
 itertools = "0.13.0"
 java_string = { path = "crates/java_string", version = "0.1.2" }
+kanden = { path = ".", version = "0.2.0-alpha.1" }
+kanden_advancement = { path = "crates/kanden_advancement", version = "0.2.0-alpha.1" }
+kanden_anvil = { path = "crates/kanden_anvil", version = "0.1.0" }
+kanden_boss_bar = { path = "crates/kanden_boss_bar", version = "0.2.0-alpha.1" }
+kanden_build_utils = { path = "crates/kanden_build_utils", version = "0.2.0-alpha.1" }
+kanden_command = { path = "crates/kanden_command", version = "0.2.0-alpha.1" }
+kanden_command_macros = { path = "crates/kanden_command_macros", version = "0.2.0-alpha.1" }
+kanden_entity = { path = "crates/kanden_entity", version = "0.2.0-alpha.1" }
+kanden_generated = { path = "crates/kanden_generated", version = "0.2.0-alpha.1" }
+kanden_ident = { path = "crates/kanden_ident", version = "0.2.0-alpha.1" }
+kanden_ident_macros = { path = "crates/kanden_ident_macros", version = "0.2.0-alpha.1" }
+kanden_inventory = { path = "crates/kanden_inventory", version = "0.2.0-alpha.1" }
+kanden_lang = { path = "crates/kanden_lang", version = "0.2.0-alpha.1" }
+kanden_math = { path = "crates/kanden_math", version = "0.2.0-alpha.1" }
+kanden_nbt = { path = "crates/kanden_nbt", version = "0.8.0", features = [
+  "serde",
+  "uuid",
+] }
+kanden_network = { path = "crates/kanden_network", version = "0.2.0-alpha.1" }
+kanden_player_list = { path = "crates/kanden_player_list", version = "0.2.0-alpha.1" }
+kanden_protocol = { path = "crates/kanden_protocol", version = "0.2.0-alpha.1" }
+kanden_protocol_macros = { path = "crates/kanden_protocol_macros", version = "0.2.0-alpha.1" }
+kanden_registry = { path = "crates/kanden_registry", version = "0.2.0-alpha.1" }
+kanden_scoreboard = { path = "crates/kanden_scoreboard", version = "0.2.0-alpha.1" }
+kanden_server = { path = "crates/kanden_server", version = "0.2.0-alpha.1" }
+kanden_server_common = { path = "crates/kanden_server_common", version = "0.2.0-alpha.1" }
+kanden_text = { path = "crates/kanden_text", version = "0.2.0-alpha.1" }
+kanden_weather = { path = "crates/kanden_weather", version = "0.2.0-alpha.1" }
+kanden_world_border = { path = "crates/kanden_world_border", version = "0.2.0-alpha.1" }
 lru = "0.12.4"
 noise = "0.9.0"
 num = "0.4.3"
 num-bigint = "0.4.6"
-owo-colors = "4.1.0"
 ordered-float = "4.2.2"
+owo-colors = "4.1.0"
 parking_lot = "0.12.3"
 paste = "1.0.15"
 petgraph = "0.6.5"
@@ -169,8 +116,8 @@ rsa = "0.9.6"
 rsa-der = "0.3.0"
 rustc-hash = "2.0.0"
 serde = "1.0.210"
-serde-value = "0.7.0"
 serde_json = "1.0.128"
+serde-value = "0.7.0"
 sha1 = "0.10.6"
 sha2 = "0.10.8"
 syn = "2.0.77"
@@ -184,48 +131,8 @@ tracing = "0.1.40"
 tracing-subscriber = "0.3.18"
 url = { version = "2.5.2", features = ["serde"] }
 uuid = { version = "1.10.0", features = ["v4"] }
-kanden = { path = ".", version = "0.2.0-alpha.1" }
-kanden_advancement = { path = "crates/kanden_advancement", version = "0.2.0-alpha.1" }
-kanden_anvil = { path = "crates/kanden_anvil", version = "0.1.0" }
-kanden_boss_bar = { path = "crates/kanden_boss_bar", version = "0.2.0-alpha.1" }
-kanden_build_utils = { path = "crates/kanden_build_utils", version = "0.2.0-alpha.1" }
-kanden_command = { path = "crates/kanden_command", version = "0.2.0-alpha.1" }
-kanden_command_macros = { path = "crates/kanden_command_macros", version = "0.2.0-alpha.1" }
-kanden_entity = { path = "crates/kanden_entity", version = "0.2.0-alpha.1" }
-kanden_generated = { path = "crates/kanden_generated", version = "0.2.0-alpha.1" }
-kanden_ident = { path = "crates/kanden_ident", version = "0.2.0-alpha.1" }
-kanden_ident_macros = { path = "crates/kanden_ident_macros", version = "0.2.0-alpha.1" }
-kanden_inventory = { path = "crates/kanden_inventory", version = "0.2.0-alpha.1" }
-kanden_lang = { path = "crates/kanden_lang", version = "0.2.0-alpha.1" }
-kanden_math = { path = "crates/kanden_math", version = "0.2.0-alpha.1" }
-kanden_nbt = { path = "crates/kanden_nbt", features = [
-    "uuid",
-    "serde",
-], version = "0.8.0" }
-kanden_network = { path = "crates/kanden_network", version = "0.2.0-alpha.1" }
-kanden_player_list = { path = "crates/kanden_player_list", version = "0.2.0-alpha.1" }
-kanden_protocol = { path = "crates/kanden_protocol", version = "0.2.0-alpha.1" }
-kanden_protocol_macros = { path = "crates/kanden_protocol_macros", version = "0.2.0-alpha.1" }
-kanden_registry = { path = "crates/kanden_registry", version = "0.2.0-alpha.1" }
-kanden_scoreboard = { path = "crates/kanden_scoreboard", version = "0.2.0-alpha.1" }
-kanden_server = { path = "crates/kanden_server", version = "0.2.0-alpha.1" }
-kanden_server_common = { path = "crates/kanden_server_common", version = "0.2.0-alpha.1" }
-kanden_text = { path = "crates/kanden_text", version = "0.2.0-alpha.1" }
-kanden_weather = { path = "crates/kanden_weather", version = "0.2.0-alpha.1" }
-kanden_world_border = { path = "crates/kanden_world_border", version = "0.2.0-alpha.1" }
 vek = "0.17.1"
 zip = "2.2.0"
-crc32c = "0.6.8"
-
-[workspace.lints.rust]
-# missing_debug_implementations = "warn" # TODO: enable me.`
-# missing_docs = "warn"
-nonstandard_style = { level = "warn", priority = -1 }
-# rust_2018_idioms = { level = "warn", priority = -1 }
-unexpected_cfgs = { level = "warn", check-cfg = ['cfg(unstable_doc)'] }
-unreachable_pub = "warn"
-unused_import_braces = "warn"
-unused_lifetimes = "warn"
 
 [workspace.lints.clippy]
 alloc_instead_of_core = "warn"
@@ -321,5 +228,98 @@ used_underscore_binding = "warn"
 wildcard_dependencies = "warn"
 zero_sized_map_values = "warn"
 
+[workspace.lints.rust]
+# missing_debug_implementations = "warn" # TODO: enable me.`
+# missing_docs = "warn"
+nonstandard_style = { level = "warn", priority = -1 }
+# rust_2018_idioms = { level = "warn", priority = -1 }
+unexpected_cfgs = { level = "warn", check-cfg = ["cfg(unstable_doc)"] }
+unreachable_pub = "warn"
+unused_import_braces = "warn"
+unused_lifetimes = "warn"
+
 [workspace.lints.rustdoc]
 unescaped_backticks = "warn"
+
+[[bench]]
+harness = false
+name = "main"
+
+[dependencies]
+anyhow.workspace = true
+bevy_app.workspace = true
+bevy_ecs.workspace = true
+bevy_log = { workspace = true, optional = true }
+bytes.workspace = true
+crc32c = { workspace = true }
+kanden_advancement = { workspace = true, optional = true }
+kanden_anvil = { workspace = true, features = [
+  "bevy_plugin",
+], optional = true }
+kanden_boss_bar = { workspace = true, optional = true }
+kanden_command = { workspace = true, optional = true }
+kanden_command_macros = { workspace = true, optional = true }
+kanden_ident.workspace = true
+kanden_ident_macros.workspace = true
+kanden_inventory = { workspace = true, optional = true }
+kanden_lang.workspace = true
+kanden_network = { workspace = true, optional = true }
+kanden_player_list = { workspace = true, optional = true }
+kanden_registry.workspace = true
+kanden_scoreboard = { workspace = true, optional = true }
+kanden_server.workspace = true
+kanden_text.workspace = true
+kanden_weather = { workspace = true, optional = true }
+kanden_world_border = { workspace = true, optional = true }
+rand.workspace = true
+uuid.workspace = true
+
+[dev-dependencies]
+anyhow.workspace = true
+clap.workspace = true
+divan.workspace = true
+flume.workspace = true
+noise.workspace = true  # For the terrain example.
+tracing.workspace = true
+
+[dev-dependencies.reqwest]
+workspace = true
+default-features = false
+features = ["blocking", "rustls-tls", "stream"]
+
+[features]
+default = [
+  "advancement",
+  "anvil",
+  "boss_bar",
+  "command",
+  "inventory",
+  "log",
+  "network",
+  "player_list",
+  "scoreboard",
+  "testing",
+  "weather",
+  "world_border",
+]
+advancement = ["dep:kanden_advancement"]
+anvil = ["dep:kanden_anvil"]
+boss_bar = ["dep:kanden_boss_bar"]
+command = ["dep:kanden_command", "dep:kanden_command_macros"]
+inventory = ["dep:kanden_inventory"]
+log = ["dep:bevy_log"]
+network = ["dep:kanden_network"]
+player_list = ["dep:kanden_player_list"]
+scoreboard = ["dep:kanden_scoreboard"]
+testing = []
+weather = ["dep:kanden_weather"]
+world_border = ["dep:kanden_world_border"]
+
+[lints]
+workspace = true
+
+[profile.dev]
+opt-level = 1
+
+[profile.dev.package."*"]
+opt-level = 3

@@ -1,14 +1,14 @@
 #![allow(clippy::type_complexity)]
 
-use rand::seq::SliceRandom;
+use kanden::entity::cow::CowBundle;
 use kanden::prelude::*;
 use kanden_boss_bar::{
     BossBarBundle, BossBarColor, BossBarDivision, BossBarFlags, BossBarHealth, BossBarStyle,
     BossBarTitle,
 };
-use kanden_server::entity::cow::CowEntityBundle;
 use kanden_server::message::ChatMessageEvent;
 use kanden_text::color::NamedColor;
+use rand::seq::SliceRandom;
 
 const SPAWN_Y: i32 = 64;
 
@@ -61,7 +61,7 @@ fn setup(
     ));
 
     commands.spawn((
-        CowEntityBundle {
+        CowBundle {
             position: Position::new([0.0, f64::from(SPAWN_Y) + 1.0, 0.0]),
             layer: EntityLayerId(layer_id),
             ..Default::default()

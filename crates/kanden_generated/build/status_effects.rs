@@ -1,11 +1,13 @@
+use std::borrow::Cow;
+
 use heck::ToPascalCase;
+use kanden_build_utils::{ident, rerun_if_changed};
+use kanden_ident::Ident;
 use proc_macro2::TokenStream;
 use quote::quote;
 use serde::Deserialize;
-use kanden_build_utils::{ident, rerun_if_changed};
 
 #[derive(Deserialize, Debug)]
-#[serde(rename_all = "UPPERCASE")]
 pub(crate) enum StatusEffectCategory {
     Beneficial,
     Harmful,
@@ -15,7 +17,7 @@ pub(crate) enum StatusEffectCategory {
 #[derive(Deserialize, Debug)]
 pub(crate) struct AttributeModifiers {
     operation: u8,
-    attribute_name: String,
+    attribute: Ident<String>,
     base_value: f64,
 }
 
@@ -141,7 +143,7 @@ pub(crate) fn build() -> anyhow::Result<TokenStream> {
             effect.attribute_modifiers.as_ref().map(|modifiers| {
                 let name = ident(effect.name.to_pascal_case());
                 let modifiers = modifiers.iter().map(|modifier| {
-                    let attribute =  ident(modifier.attribute_name.to_pascal_case());
+                    let attribute =  ident(modifier.attribute.path().to_pascal_case());
                     let operation = &modifier.operation;
                     let value = &modifier.base_value;
 

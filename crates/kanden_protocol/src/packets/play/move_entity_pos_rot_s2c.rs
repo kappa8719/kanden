@@ -7,5 +7,5 @@ pub struct MoveEntityPosRotS2c {
     pub delta: [i16; 3],
     pub yaw: ByteAngle,
     pub pitch: ByteAngle,
-    pub flags: MovementFlags,
+    pub on_ground: bool,
 }

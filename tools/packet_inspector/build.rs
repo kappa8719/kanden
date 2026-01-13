@@ -1,10 +1,10 @@
 use std::collections::HashMap;
 
 use heck::ToPascalCase;
+use kanden_build_utils::write_generated_file;
 use proc_macro2::TokenStream;
 use quote::quote;
 use serde::Deserialize;
-use kanden_build_utils::write_generated_file;
 
 #[derive(Deserialize)]
 struct Packet {
@@ -66,13 +66,15 @@ fn write_packets(packets: &Vec<Packet>) -> anyhow::Result<()> {
             _ => unreachable!(),
         };
 
-        let phase = match packet.phase.as_str() {
-            "handshake" => quote! { kanden_protocol::PacketState::Handshake },
-            "configuration" => quote! { kanden_protocol::PacketState::Configuration },
-            "status" => quote! { kanden_protocol::PacketState::Status },
-            "login" => quote! { kanden_protocol::PacketState::Login },
-            "play" => quote! { kanden_protocol::PacketState::Play },
-            _ => unreachable!(),
+        let phase = match packet.name {
+            _ => match packet.phase.as_str() {
+                "handshake" => quote! { kanden_protocol::PacketState::Handshake },
+                "configuration" => quote! { kanden_protocol::PacketState::Configuration },
+                "status" => quote! { kanden_protocol::PacketState::Status },
+                "login" => quote! { kanden_protocol::PacketState::Login },
+                "play" => quote! { kanden_protocol::PacketState::Play },
+                _ => unreachable!(),
+            },
         };
 
         // const STD_PACKETS =
@@ -111,13 +113,16 @@ fn write_transformer(packets: &[Packet]) -> anyhow::Result<()> {
             _ => panic!("Invalid side"),
         };
 
-        let state = match packet.phase.as_str() {
-            "handshake" => "Handshake".to_owned(),
-            "configuration" => "Configuration".to_owned(),
-            "status" => "Status".to_owned(),
-            "login" => "Login".to_owned(),
-            "play" => "Play".to_owned(),
-            _ => panic!("Invalid state"),
+        let state = match packet.name.as_str() {
+            "show_dialog" | "clear_dialog" | "custom_click_action" => "Common".to_owned(),
+            _ => match packet.phase.as_str() {
+                "handshake" => "Handshake".to_owned(),
+                "configuration" => "Configuration".to_owned(),
+                "status" => "Status".to_owned(),
+                "login" => "Login".to_owned(),
+                "play" => "Play".to_owned(),
+                _ => panic!("Invalid state"),
+            },
         };
 
         let name = packet

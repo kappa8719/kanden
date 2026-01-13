@@ -9,16 +9,6 @@ use anyhow::{bail, ensure, Context};
 use base64::prelude::*;
 use hmac::digest::Update;
 use hmac::{Hmac, Mac};
-use num_bigint::BigInt;
-use reqwest::StatusCode;
-use rsa::Pkcs1v15Encrypt;
-use serde::{Deserialize, Serialize};
-use serde_json::{json, Value};
-use sha1::Sha1;
-use sha2::{Digest, Sha256};
-use tokio::net::{TcpListener, TcpStream};
-use tracing::{error, info, trace, warn};
-use uuid::Uuid;
 use kanden_lang::keys;
 use kanden_protocol::packets::configuration::select_known_packs_s2c::KnownPack;
 use kanden_protocol::packets::configuration::{
@@ -44,6 +34,16 @@ use kanden_server::protocol::{PacketDecoder, PacketEncoder, RawBytes, VarInt};
 use kanden_server::registry::{BiomeRegistry, DimensionTypeRegistry, RegistryCodec};
 use kanden_server::text::{Color, IntoText};
 use kanden_server::{ident, Ident, Text, MINECRAFT_VERSION, PROTOCOL_VERSION};
+use num_bigint::BigInt;
+use reqwest::StatusCode;
+use rsa::Pkcs1v15Encrypt;
+use serde::{Deserialize, Serialize};
+use serde_json::{json, Value};
+use sha1::Sha1;
+use sha2::{Digest, Sha256};
+use tokio::net::{TcpListener, TcpStream};
+use tracing::{error, info, trace, warn};
+use uuid::Uuid;
 
 use crate::legacy_ping::try_handle_legacy_ping;
 use crate::packet_io::PacketIo;
@@ -418,7 +418,7 @@ async fn handle_login(
             id: id.into(),
             entries: entries
                 .into_iter()
-                .map(|value| (value.name.into(), None))
+                .map(|(name, _)| (name.into(), None))
                 .collect(),
         })
         .await?;

@@ -1,10 +1,10 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashMap};
 
 use bevy_app::prelude::*;
 use bevy_ecs::prelude::*;
-use tracing::error;
 use kanden_ident::Ident;
 use kanden_nbt::{compound, Compound, List, Value};
+use tracing::error;
 
 use crate::RegistrySet;
 
@@ -20,7 +20,7 @@ pub(super) fn build(app: &mut App) {
 /// one of the other registry resources instead.
 #[derive(Resource, Debug)]
 pub struct RegistryCodec {
-    pub registries: BTreeMap<Ident<String>, Vec<RegistryValue>>,
+    pub registries: BTreeMap<Ident<String>, HashMap<Ident<String>, Compound>>,
     // TODO: store this in binary form?
     cached_codec: Compound,
 }
@@ -36,13 +36,16 @@ impl RegistryCodec {
         &self.cached_codec
     }
 
-    pub fn registry(&self, registry_key: Ident<&str>) -> &Vec<RegistryValue> {
+    pub fn registry(&self, registry_key: Ident<&str>) -> &HashMap<Ident<String>, Compound> {
         self.registries
             .get(registry_key.as_str())
             .unwrap_or_else(|| panic!("missing registry for {registry_key}"))
     }
 
-    pub fn registry_mut(&mut self, registry_key: Ident<&str>) -> &mut Vec<RegistryValue> {
+    pub fn registry_mut(
+        &mut self,
+        registry_key: Ident<&str>,
+    ) -> &mut HashMap<Ident<String>, Compound> {
         self.registries
             .get_mut(registry_key.as_str())
             .unwrap_or_else(|| panic!("missing registry for {registry_key}"))
@@ -63,7 +66,7 @@ impl Default for RegistryCodec {
 
         for (k, v) in compound {
             let reg_name: Ident<String> = Ident::new(k).expect("invalid registry name").into();
-            let mut reg_values = vec![];
+            let mut reg_values = HashMap::new();
 
             let Value::Compound(inner) = v else {
                 error!("registry {reg_name} is not a compound");
@@ -84,10 +87,7 @@ impl Default for RegistryCodec {
                     continue;
                 };
 
-                reg_values.push(RegistryValue {
-                    name,
-                    element: value,
-                });
+                reg_values.insert(name, value);
             }
 
             registries.insert(reg_name, reg_values);
@@ -110,11 +110,11 @@ fn cache_registry_codec(codec: ResMut<RegistryCodec>) {
         for (reg_name, reg) in &codec.registries {
             let mut value = vec![];
 
-            for (id, v) in reg.iter().enumerate() {
+            for (id, (name, element)) in reg.iter().enumerate() {
                 value.push(compound! {
                     "id" => id as i32,
-                    "name" => v.name.as_str(),
-                    "element" => v.element.clone(),
+                    "name" => name.as_str(),
+                    "element" => element.clone(),
                 });
             }
 

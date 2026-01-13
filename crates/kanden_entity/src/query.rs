@@ -5,14 +5,16 @@ use bevy_ecs::query::QueryData;
 use bevy_ecs::world::Ref;
 use kanden_math::DVec3;
 use kanden_protocol::encode::WritePacket;
+use kanden_protocol::lpvec::LpVec3;
 use kanden_protocol::movement_flags::MovementFlags;
 use kanden_protocol::packets::play::{
-    AddEntityS2c, AnimateS2c, EntityEventS2c, MoveEntityPosRotS2c, MoveEntityPosS2c,
-    MoveEntityRotS2c, RotateHeadS2c, SetEntityDataS2c, SetEntityMotionS2c, TeleportEntityS2c,
-    UpdateAttributesS2c,
+    AddEntityS2c, AnimateS2c, EntityEventS2c, EntityPositionSyncS2c, MoveEntityPosRotS2c,
+    MoveEntityPosS2c, MoveEntityRotS2c, RotateHeadS2c, SetEntityDataS2c, SetEntityMotionS2c,
+    TeleportEntityS2c, UpdateAttributesS2c,
 };
+use kanden_protocol::realtive::Relative;
 use kanden_protocol::var_int::VarInt;
-use kanden_protocol::ByteAngle;
+use kanden_protocol::{ByteAngle, Decode, Encode};
 use kanden_server_common::UniqueId;
 
 use crate::attributes::TrackedEntityAttributes;
@@ -98,8 +100,7 @@ impl UpdateEntityQueryItem<'_> {
                 delta: (position_delta * 4096.0).to_array().map(|v| v as i16),
                 yaw: ByteAngle::from_degrees(self.look.yaw),
                 pitch: ByteAngle::from_degrees(self.look.pitch),
-                // FIXME: add missing pushing_against_wall
-                flags: MovementFlags::new().with_on_ground(self.on_ground.0),
+                on_ground: self.on_ground.0,
             });
         } else {
             if changed_position && !needs_teleport {
@@ -124,8 +125,18 @@ impl UpdateEntityQueryItem<'_> {
             writer.write_packet(&TeleportEntityS2c {
                 entity_id,
                 position: self.pos.0,
-                yaw: ByteAngle::from_degrees(self.look.yaw),
-                pitch: ByteAngle::from_degrees(self.look.pitch),
+                delta_movement: self.velocity.0.into(),
+                yaw: self.look.yaw,
+                pitch: self.look.pitch,
+                on_ground: self.on_ground.0,
+                relative: Relative::from_bits(0x00),
+            });
+            writer.write_packet(&EntityPositionSyncS2c {
+                entity_id,
+                position: self.pos.0,
+                delta_movement: self.velocity.0.into(),
+                yaw: self.look.yaw,
+                pitch: self.look.pitch,
                 on_ground: self.on_ground.0,
             });
         }

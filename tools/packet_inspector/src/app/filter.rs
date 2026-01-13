@@ -75,6 +75,7 @@ fn get_checkbox_state(state: &SharedState, packet_state: PacketState) -> TriChec
 
 fn draw_packet_list(ui: &mut Ui, state: &mut SharedState, packet_state: PacketState) -> usize {
     let title = match packet_state {
+        PacketState::Common => "Common",
         PacketState::Handshake => "Handshaking",
         PacketState::Status => "Status",
         PacketState::Login => "Login",

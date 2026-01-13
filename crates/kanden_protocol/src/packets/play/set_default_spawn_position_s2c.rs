@@ -1,7 +1,10 @@
-use crate::{BlockPos, Decode, Encode, Packet};
+use std::borrow::Cow;
 
-#[derive(Copy, Clone, Debug, Encode, Decode, Packet)]
-pub struct SetDefaultSpawnPositionS2c {
-    pub position: BlockPos,
-    pub angle: f32,
+use crate::{Decode, Encode, GlobalPos, Packet};
+
+#[derive(Clone, Debug, Encode, Decode, Packet)]
+pub struct SetDefaultSpawnPositionS2c<'a> {
+    pub position: GlobalPos<Cow<'a, str>>,
+    pub yaw: f32,
+    pub pitch: f32,
 }

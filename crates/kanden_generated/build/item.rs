@@ -1,9 +1,9 @@
 use anyhow::Ok;
 use heck::ToPascalCase;
+use kanden_build_utils::{ident, rerun_if_changed};
 use proc_macro2::TokenStream;
 use quote::quote;
 use serde::Deserialize;
-use kanden_build_utils::{ident, rerun_if_changed};
 
 #[derive(Deserialize, Clone, Debug)]
 struct Item {
@@ -12,8 +12,8 @@ struct Item {
     translation_key: String,
     max_stack: i8,
     max_durability: u16,
-    enchantability: u8,
-    fireproof: bool,
+    enchantable: Option<u8>,
+    damage_resistant: Option<String>,
     food: Option<FoodComponent>,
 }
 
@@ -149,10 +149,10 @@ pub(crate) fn build() -> anyhow::Result<TokenStream> {
 
     let item_kind_to_enchantability_arms = items
         .iter()
-        .filter(|item| item.enchantability != 0)
+        .filter(|item| item.enchantable.is_some())
         .map(|item| {
             let name = ident(item.name.to_pascal_case());
-            let ench = item.enchantability;
+            let ench = item.enchantable.unwrap();
 
             quote! {
                 Self::#name => #ench,
@@ -160,9 +160,9 @@ pub(crate) fn build() -> anyhow::Result<TokenStream> {
         })
         .collect::<TokenStream>();
 
-    let item_kind_to_fireproof_arms = items
+    let item_kind_to_damage_resistant_arms = items
         .iter()
-        .filter(|item| item.fireproof)
+        .filter(|item| item.damage_resistant.is_some())
         .map(|item| {
             let name = ident(item.name.to_pascal_case());
 
@@ -276,10 +276,10 @@ pub(crate) fn build() -> anyhow::Result<TokenStream> {
             }
 
             /// Returns if the item can survive in fire/lava.
-            pub const fn fireproof(self) -> bool {
+            pub const fn damage_resistant(self) -> bool {
                 #[allow(clippy::match_like_matches_macro)]
                 match self {
-                    #item_kind_to_fireproof_arms
+                    #item_kind_to_damage_resistant_arms
                     _ => false
                 }
             }

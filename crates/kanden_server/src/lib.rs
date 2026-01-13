@@ -27,14 +27,14 @@ pub mod title;
 
 pub use chunk_view::ChunkView;
 pub use event_loop::{EventLoopPostUpdate, EventLoopPreUpdate, EventLoopUpdate};
-pub use layer::{ChunkLayer, EntityLayer, Layer, LayerBundle};
 pub use kanden_protocol::{
     block, ident, item, math, text, uuid, BiomePos, BlockPos, BlockState, ChunkPos,
     CompressionThreshold, Difficulty, Direction, GameMode, Hand, Ident, ItemKind, ItemStack, Text,
     MINECRAFT_VERSION, PROTOCOL_VERSION,
 };
 pub use kanden_server_common::*;
+pub use layer::{ChunkLayer, EntityLayer, Layer, LayerBundle};
 pub use {
-    bevy_app as app, bevy_ecs as ecs, rand, kanden_entity as entity, kanden_nbt as nbt,
-    kanden_protocol as protocol, kanden_registry as registry,
+    bevy_app as app, bevy_ecs as ecs, kanden_entity as entity, kanden_nbt as nbt,
+    kanden_protocol as protocol, kanden_registry as registry, rand,
 };

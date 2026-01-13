@@ -58,7 +58,7 @@ pub(crate) fn setup<'a>() -> (
         yaw: ByteAngle(100),
         head_yaw: ByteAngle(50),
         data: VarInt(i32::MIN),
-        velocity: Velocity([12, 34, 56]),
+        velocity: Velocity::from_array([12.0, 34.0, 56.0]),
     };
 
     (

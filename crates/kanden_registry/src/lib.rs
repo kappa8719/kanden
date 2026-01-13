@@ -3,6 +3,8 @@
 pub mod biome;
 pub mod codec;
 pub mod dimension_type;
+pub mod environment_attribute;
+pub mod serde;
 pub mod tags;
 
 use std::fmt::Debug;
@@ -17,8 +19,8 @@ pub use codec::RegistryCodec;
 pub use dimension_type::DimensionTypeRegistry;
 use indexmap::map::Entry;
 use indexmap::IndexMap;
-pub use tags::TagsRegistry;
 use kanden_ident::Ident;
+pub use tags::TagsRegistry;
 
 pub struct RegistryPlugin;
 
@@ -94,6 +96,10 @@ impl<I: RegistryIdx, V> Registry<I, V> {
 
     pub fn index_of(&self, name: Ident<&str>) -> Option<I> {
         self.items.get_index_of(name.as_str()).map(I::from_index)
+    }
+
+    pub fn name_of(&self, index: I) -> Option<&Ident<String>> {
+        self.items.get_index(index.to_index()).map(|(k, _)| k)
     }
 
     pub fn iter(

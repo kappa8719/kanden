@@ -8,7 +8,7 @@ use kanden::message::SendMessage;
 use kanden::prelude::*;
 use kanden_text::color::NamedColor;
 
-type SpherePartBundle = kanden::entity::cow::CowEntityBundle;
+type SpherePartBundle = kanden::entity::cow::CowBundle;
 
 const SPHERE_CENTER: DVec3 = DVec3::new(0.5, SPAWN_POS.y as f64 + 2.0, 0.5);
 const SPHERE_AMOUNT: usize = 200;

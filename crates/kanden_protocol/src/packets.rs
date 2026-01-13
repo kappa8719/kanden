@@ -85,6 +85,10 @@ pub mod configuration {
     pub use resource_pack_c2s::ResourcePackC2s;
     pub mod update_tags_s2c;
     pub use update_tags_s2c::UpdateTagsS2c;
+    pub mod code_of_conduct_s2c;
+    pub use code_of_conduct_s2c::CodeOfConductS2c;
+    pub mod accept_code_of_conduct_c2s;
+    pub use accept_code_of_conduct_c2s::AcceptCodeOfConductC2s;
 }
 
 pub mod play {
@@ -116,8 +120,6 @@ pub mod play {
     pub use configuration_acknowledged_c2s::ConfigurationAcknowledgedC2s;
     pub mod container_slot_state_changed_c2s;
     pub use container_slot_state_changed_c2s::ContainerSlotStateChangedC2s;
-    pub mod debug_sample_subscription_c2s;
-    pub use debug_sample_subscription_c2s::DebugSampleSubscriptionC2s;
     pub mod debug_sample_s2c;
     pub use debug_sample_s2c::DebugSampleS2c;
     pub mod chunk_batch_finished_s2c;
@@ -304,8 +306,6 @@ pub mod play {
     pub use tag_query_s2c::TagQueryS2c;
     pub mod move_player_status_only_c2s;
     pub use move_player_status_only_c2s::MovePlayerStatusOnlyC2s;
-    pub mod horse_screen_open_s2c;
-    pub use horse_screen_open_s2c::HorseScreenOpenS2c;
     pub mod open_screen_s2c;
     pub use open_screen_s2c::OpenScreenS2c;
     pub mod open_book_s2c;
@@ -478,6 +478,33 @@ pub mod play {
     pub use test_instance_block_action_c2s::TestInstanceBlockActionC2s;
     pub mod test_instance_block_status_s2c;
     pub use test_instance_block_status_s2c::TestInstanceBlockStatusS2c;
+    pub mod change_game_mode_c2s;
+    pub use change_game_mode_c2s::ChangeGameModeC2s;
+    pub mod debug_block_value_s2c;
+    pub use debug_block_value_s2c::DebugBlockValueS2c;
+    pub mod debug_chunk_value_s2c;
+    pub use debug_chunk_value_s2c::DebugChunkValueS2c;
+    pub mod debug_entity_value_s2c;
+    pub use debug_entity_value_s2c::DebugEntityValueS2c;
+    pub mod debug_event_s2c;
+    pub use debug_event_s2c::DebugEventS2c;
+    pub mod debug_subscription_request_c2s;
+    pub use debug_subscription_request_c2s::DebugSubscriptionRequestC2s;
+    pub mod game_test_highlight_pos_s2c;
+    pub use game_test_highlight_pos_s2c::GameTestHighlightPosS2c;
+    pub mod mount_screen_open_s2c;
+    pub use mount_screen_open_s2c::MountScreenOpenS2c;
+    pub mod waypoint_s2c;
+    pub use waypoint_s2c::WaypointS2c;
+}
+
+pub mod common {
+    pub mod custom_click_action_c2s;
+    pub use custom_click_action_c2s::CustomClickActionC2s;
+    pub mod clear_dialog_s2c;
+    pub use clear_dialog_s2c::ClearDialogS2c;
+    pub mod show_dialog_s2c;
+    pub use show_dialog_s2c::ShowDialogS2c;
 }
 
 pub mod status {

@@ -2,6 +2,7 @@ use std::fmt::Debug;
 use std::io::Write;
 
 use kanden_generated::attributes::{EntityAttribute, EntityAttributeOperation};
+pub use kanden_generated::data_components::DataComponentId;
 pub use kanden_generated::item::ItemKind;
 use kanden_generated::registry_id::RegistryId;
 pub use kanden_generated::sound::Sound;
@@ -77,6 +78,13 @@ impl Debug for ItemStack {
 type StrIdent = Ident<String>;
 
 #[derive(Clone, PartialEq, Debug, Encode, Decode)]
+struct KineticWeaponCondition {
+    pub max_duration_ticks: i32,
+    pub min_speed: f32,
+    pub min_relative_speed: f32,
+}
+
+#[derive(Clone, PartialEq, Debug, Encode, Decode)]
 pub enum ItemComponent {
     /// Customizable data that doesn't fit any specific component.
     CustomData {
@@ -98,11 +106,20 @@ pub enum ItemComponent {
     },
     /// Marks the item as unbreakable.
     Unbreakable,
+    // TODO: Docs
+    UseEffects {
+        can_sprint: bool,
+        interact_vibrations: bool,
+        speed_multiflier: f32,
+    },
     /// Item's custom name. Normally shown in italic, and changeable at an
     /// anvil.
     CustomName {
         name: Text,
     },
+    // TODO: Docs
+    MinimumAttackCharge(f32),
+    DamageType, // TODO
     /// Override for the item's default name. Shown when the item has no custom
     /// name.
     ItemName {
@@ -226,6 +243,15 @@ pub enum ItemComponent {
         /// How long blocking will be disabled after an attack.
         disable_blocking_for_secs: f32,
     },
+    // TODO: Docs
+    AttackRange {
+        min_range: f32,
+        max_range: f32,
+        min_creative_range: f32,
+        max_creative_range: f32,
+        hitbox_margin: f32,
+        mob_factor: f32,
+    },
     /// Allows the item to be enchanted by an enchanting table.
     Enchantable {
         /// Opaque internal value controlling how expensive enchantments may be
@@ -280,6 +306,27 @@ pub enum ItemComponent {
         block_sound: Option<SoundId>,
         disable_sound: Option<SoundId>,
     },
+    // TODO: Docs
+    PiercingWeapon {
+        deals_knockback: bool,
+        dismounts: bool,
+        sound: Option<SoundDirect>,
+        hit_sound: Option<SoundDirect>,
+    },
+    // TODO: Docs
+    KineticWeapon {
+        contact_cooldown_ticks: VarInt,
+        delay_ticks: VarInt,
+        dismount_conditions: Option<KineticWeaponCondition>,
+        knockback_conditions: Option<KineticWeaponCondition>,
+        damage_conditions: Option<KineticWeaponCondition>,
+        forward_movement: f32,
+        damage_multiplier: f32,
+        sound: Option<SoundDirect>,
+        hit_sound: Option<SoundDirect>,
+    },
+    // TODO: DOcs
+    SwingAnimation,
     /// The enchantments stored in this enchanted book.
     StoredEnchantments {
         /// The enchantments. The first element is the enchantment ID, the
@@ -932,104 +979,121 @@ pub struct ToolRule {
 }
 
 impl ItemComponent {
-    pub fn id(&self) -> u32 {
+    pub fn id(&self) -> usize {
         match self {
-            ItemComponent::CustomData { .. } => 0,
-            ItemComponent::MaxStackSize { .. } => 1,
-            ItemComponent::MaxDamage { .. } => 2,
-            ItemComponent::Damage { .. } => 3,
-            ItemComponent::Unbreakable => 4,
-            ItemComponent::CustomName { .. } => 5,
-            ItemComponent::ItemName { .. } => 6,
-            ItemComponent::ItemModel { .. } => 7,
-            ItemComponent::Lore { .. } => 8,
-            ItemComponent::Rarity { .. } => 9,
-            ItemComponent::Enchantments { .. } => 10,
-            ItemComponent::CanPlaceOn { .. } => 11,
-            ItemComponent::CanBreak { .. } => 12,
-            ItemComponent::AttributeModifiers { .. } => 13,
-            ItemComponent::CustomModelData { .. } => 14,
-            ItemComponent::TooltipDisplay { .. } => 15,
-            ItemComponent::RepairCost { .. } => 16,
-            ItemComponent::CreativeSlotLock => 17,
-            ItemComponent::EnchantmentGlintOverride { .. } => 18,
-            ItemComponent::IntangibleProjectile => 19,
-            ItemComponent::Food { .. } => 20,
-            ItemComponent::Consumable { .. } => 21,
-            ItemComponent::UseRemainder { .. } => 22,
-            ItemComponent::UseCooldown { .. } => 23,
-            ItemComponent::DamageResistant { .. } => 24,
-            ItemComponent::Tool { .. } => 25,
-            ItemComponent::Weapon { .. } => 26,
-            ItemComponent::Enchantable { .. } => 27,
-            ItemComponent::Equippable { .. } => 28,
-            ItemComponent::Repairable { .. } => 29,
-            ItemComponent::Glider => 30,
-            ItemComponent::TooltipStyle { .. } => 31,
-            ItemComponent::DeathProtection { .. } => 32,
-            ItemComponent::BlocksAttacks { .. } => 33,
-            ItemComponent::StoredEnchantments { .. } => 34,
-            ItemComponent::DyedColor { .. } => 35,
-            ItemComponent::MapColor { .. } => 36,
-            ItemComponent::MapId { .. } => 37,
-            ItemComponent::MapDecorations { .. } => 38,
-            ItemComponent::MapPostProcessing { .. } => 39,
-            ItemComponent::ChargedProjectiles { .. } => 40,
-            ItemComponent::BundleContents { .. } => 41,
-            ItemComponent::PotionContents { .. } => 42,
-            ItemComponent::PotionDurationScale { .. } => 43,
-            ItemComponent::SuspiciousStewEffects { .. } => 44,
-            ItemComponent::WritableBookContent { .. } => 45,
-            ItemComponent::WrittenBookContent { .. } => 46,
-            ItemComponent::Trim { .. } => 47,
-            ItemComponent::DebugStickState { .. } => 48,
-            ItemComponent::EntityData { .. } => 49,
-            ItemComponent::BucketEntityData { .. } => 50,
-            ItemComponent::BlockEntityData { .. } => 51,
-            ItemComponent::Instrument { .. } => 52,
-            ItemComponent::ProvidesTrimMaterial => 53,
-            ItemComponent::OminousBottleAmplifier { .. } => 54,
-            ItemComponent::JukeboxPlayable { .. } => 55,
-            ItemComponent::ProvidesBannerPatterns { .. } => 56,
-            ItemComponent::Recipes { .. } => 57,
-            ItemComponent::LodestoneTracker { .. } => 58,
-            ItemComponent::FireworkExplosion { .. } => 59,
-            ItemComponent::Fireworks { .. } => 60,
-            ItemComponent::Profile { .. } => 61,
-            ItemComponent::NoteBlockSound { .. } => 62,
-            ItemComponent::BannerPatterns { .. } => 63,
-            ItemComponent::BaseColor { .. } => 64,
-            ItemComponent::PotDecorations { .. } => 65,
-            ItemComponent::Container { .. } => 66,
-            ItemComponent::BlockState { .. } => 67,
-            ItemComponent::Bees { .. } => 68,
-            ItemComponent::Lock { .. } => 69,
-            ItemComponent::ContainerLoot { .. } => 70,
-            ItemComponent::BreakSound { .. } => 71,
-            ItemComponent::VillagerVariant { .. } => 72,
-            ItemComponent::WolfVariant { .. } => 73,
-            ItemComponent::WolfSoundVariant { .. } => 74,
-            ItemComponent::WolfCollar { .. } => 75,
-            ItemComponent::FoxVariant { .. } => 76,
-            ItemComponent::SalmonSize { .. } => 77,
-            ItemComponent::ParrotVariant { .. } => 78,
-            ItemComponent::TropicalFishPattern { .. } => 79,
-            ItemComponent::TropicalFishBaseColor { .. } => 80,
-            ItemComponent::TropicalFishPatternColor { .. } => 81,
-            ItemComponent::MooshroomVariant { .. } => 82,
-            ItemComponent::RabbitVariant { .. } => 83,
-            ItemComponent::PigVariant { .. } => 84,
-            ItemComponent::CowVariant { .. } => 85,
-            ItemComponent::ChickenVariant { .. } => 86,
-            ItemComponent::FrogVariant { .. } => 87,
-            ItemComponent::HorseVariant { .. } => 88,
-            ItemComponent::PaintingVariant { .. } => 89,
-            ItemComponent::LlamaVariant { .. } => 90,
-            ItemComponent::AxolotlVariant { .. } => 91,
-            ItemComponent::CatVariant { .. } => 92,
-            ItemComponent::CatCollar { .. } => 93,
-            ItemComponent::SheepColor { .. } => 94,
-            ItemComponent::ShulkerColor { .. } => 95,
+            ItemComponent::CustomData { .. } => DataComponentId::CUSTOM_DATA,
+            ItemComponent::MaxStackSize { .. } => DataComponentId::MAX_STACK_SIZE,
+            ItemComponent::MaxDamage { .. } => DataComponentId::MAX_DAMAGE,
+            ItemComponent::Damage { .. } => DataComponentId::DAMAGE,
+            ItemComponent::Unbreakable => DataComponentId::UNBREAKABLE,
+            ItemComponent::UseEffects { .. } => DataComponentId::USE_EFFECTS,
+            ItemComponent::CustomName { .. } => DataComponentId::CUSTOM_NAME,
+            ItemComponent::ItemName { .. } => DataComponentId::ITEM_NAME,
+            ItemComponent::MinimumAttackCharge(_) => DataComponentId::MINIMUM_ATTACK_CHARGE,
+            ItemComponent::DamageType => DataComponentId::DAMAGE_TYPE,
+            ItemComponent::ItemModel { .. } => DataComponentId::ITEM_MODEL,
+            ItemComponent::Lore { .. } => DataComponentId::LORE,
+            ItemComponent::Rarity { .. } => DataComponentId::RARITY,
+            ItemComponent::Enchantments { .. } => DataComponentId::ENCHANTMENTS,
+            ItemComponent::CanPlaceOn { .. } => DataComponentId::CAN_PLACE_ON,
+            ItemComponent::CanBreak { .. } => DataComponentId::CAN_BREAK,
+            ItemComponent::AttributeModifiers { .. } => DataComponentId::ATTRIBUTE_MODIFIERS,
+            ItemComponent::CustomModelData { .. } => DataComponentId::CUSTOM_MODEL_DATA,
+            ItemComponent::TooltipDisplay { .. } => DataComponentId::TOOLTIP_DISPLAY,
+            ItemComponent::RepairCost { .. } => DataComponentId::REPAIR_COST,
+            ItemComponent::CreativeSlotLock => DataComponentId::CREATIVE_SLOT_LOCK,
+            ItemComponent::EnchantmentGlintOverride { .. } => {
+                DataComponentId::ENCHANTMENT_GLINT_OVERRIDE
+            }
+            ItemComponent::IntangibleProjectile => DataComponentId::INTANGIBLE_PROJECTILE,
+            ItemComponent::Food { .. } => DataComponentId::FOOD,
+            ItemComponent::Consumable { .. } => DataComponentId::CONSUMABLE,
+            ItemComponent::UseRemainder { .. } => DataComponentId::USE_REMAINDER,
+            ItemComponent::UseCooldown { .. } => DataComponentId::USE_COOLDOWN,
+            ItemComponent::DamageResistant { .. } => DataComponentId::DAMAGE_RESISTANT,
+            ItemComponent::Tool { .. } => DataComponentId::TOOL,
+            ItemComponent::Weapon { .. } => DataComponentId::WEAPON,
+            ItemComponent::AttackRange { .. } => DataComponentId::ATTACK_RANGE,
+            ItemComponent::Enchantable { .. } => DataComponentId::ENCHANTABLE,
+            ItemComponent::Equippable { .. } => DataComponentId::EQUIPPABLE,
+            ItemComponent::Repairable { .. } => DataComponentId::REPAIRABLE,
+            ItemComponent::Glider => DataComponentId::GLIDER,
+            ItemComponent::TooltipStyle { .. } => DataComponentId::TOOLTIP_STYLE,
+            ItemComponent::DeathProtection { .. } => DataComponentId::DEATH_PROTECTION,
+            ItemComponent::BlocksAttacks { .. } => DataComponentId::BLOCKS_ATTACKS,
+            ItemComponent::PiercingWeapon { .. } => DataComponentId::PIERCING_WEAPON,
+            ItemComponent::KineticWeapon { .. } => DataComponentId::KINETIC_WEAPON,
+            ItemComponent::SwingAnimation => DataComponentId::SWING_ANIMATION,
+            ItemComponent::StoredEnchantments { .. } => DataComponentId::STORED_ENCHANTMENTS,
+            ItemComponent::DyedColor { .. } => DataComponentId::DYED_COLOR,
+            ItemComponent::MapColor { .. } => DataComponentId::MAP_COLOR,
+            ItemComponent::MapId { .. } => DataComponentId::MAP_ID,
+            ItemComponent::MapDecorations { .. } => DataComponentId::MAP_DECORATIONS,
+            ItemComponent::MapPostProcessing { .. } => DataComponentId::MAP_POST_PROCESSING,
+            ItemComponent::ChargedProjectiles { .. } => DataComponentId::CHARGED_PROJECTILES,
+            ItemComponent::BundleContents { .. } => DataComponentId::BUNDLE_CONTENTS,
+            ItemComponent::PotionContents { .. } => DataComponentId::POTION_CONTENTS,
+            ItemComponent::PotionDurationScale { .. } => DataComponentId::POTION_DURATION_SCALE,
+            ItemComponent::SuspiciousStewEffects { .. } => DataComponentId::SUSPICIOUS_STEW_EFFECTS,
+            ItemComponent::WritableBookContent { .. } => DataComponentId::WRITABLE_BOOK_CONTENT,
+            ItemComponent::WrittenBookContent { .. } => DataComponentId::WRITTEN_BOOK_CONTENT,
+            ItemComponent::Trim { .. } => DataComponentId::TRIM,
+            ItemComponent::DebugStickState { .. } => DataComponentId::DEBUG_STICK_STATE,
+            ItemComponent::EntityData { .. } => DataComponentId::ENTITY_DATA,
+            ItemComponent::BucketEntityData { .. } => DataComponentId::BUCKET_ENTITY_DATA,
+            ItemComponent::BlockEntityData { .. } => DataComponentId::BLOCK_ENTITY_DATA,
+            ItemComponent::Instrument { .. } => DataComponentId::INSTRUMENT,
+            ItemComponent::ProvidesTrimMaterial => DataComponentId::PROVIDES_TRIM_MATERIAL,
+            ItemComponent::OminousBottleAmplifier { .. } => {
+                DataComponentId::OMINOUS_BOTTLE_AMPLIFIER
+            }
+            ItemComponent::JukeboxPlayable { .. } => DataComponentId::JUKEBOX_PLAYABLE,
+            ItemComponent::ProvidesBannerPatterns { .. } => {
+                DataComponentId::PROVIDES_BANNER_PATTERNS
+            }
+            ItemComponent::Recipes { .. } => DataComponentId::RECIPES,
+            ItemComponent::LodestoneTracker { .. } => DataComponentId::LODESTONE_TRACKER,
+            ItemComponent::FireworkExplosion { .. } => DataComponentId::FIREWORK_EXPLOSION,
+            ItemComponent::Fireworks { .. } => DataComponentId::FIREWORKS,
+            ItemComponent::Profile { .. } => DataComponentId::PROFILE,
+            ItemComponent::NoteBlockSound { .. } => DataComponentId::NOTE_BLOCK_SOUND,
+            ItemComponent::BannerPatterns { .. } => DataComponentId::BANNER_PATTERNS,
+            ItemComponent::BaseColor { .. } => DataComponentId::BASE_COLOR,
+            ItemComponent::PotDecorations { .. } => DataComponentId::POT_DECORATIONS,
+            ItemComponent::Container { .. } => DataComponentId::CONTAINER,
+            ItemComponent::BlockState { .. } => DataComponentId::BLOCK_STATE,
+            ItemComponent::Bees { .. } => DataComponentId::BEES,
+            ItemComponent::Lock { .. } => DataComponentId::LOCK,
+            ItemComponent::ContainerLoot { .. } => DataComponentId::CONTAINER_LOOT,
+            ItemComponent::BreakSound { .. } => DataComponentId::BREAK_SOUND,
+            ItemComponent::VillagerVariant { .. } => DataComponentId::VILLAGER_VARIANT,
+            ItemComponent::WolfVariant { .. } => DataComponentId::WOLF_VARIANT,
+            ItemComponent::WolfSoundVariant { .. } => DataComponentId::WOLF_SOUND_VARIANT,
+            ItemComponent::WolfCollar { .. } => DataComponentId::WOLF_COLLAR,
+            ItemComponent::FoxVariant { .. } => DataComponentId::FOX_VARIANT,
+            ItemComponent::SalmonSize { .. } => DataComponentId::SALMON_SIZE,
+            ItemComponent::ParrotVariant { .. } => DataComponentId::PARROT_VARIANT,
+            ItemComponent::TropicalFishPattern { .. } => DataComponentId::TROPICAL_FISH_PATTERN,
+            ItemComponent::TropicalFishBaseColor { .. } => {
+                DataComponentId::TROPICAL_FISH_BASE_COLOR
+            }
+            ItemComponent::TropicalFishPatternColor { .. } => {
+                DataComponentId::TROPICAL_FISH_PATTERN_COLOR
+            }
+            ItemComponent::MooshroomVariant { .. } => DataComponentId::MOOSHROOM_VARIANT,
+            ItemComponent::RabbitVariant { .. } => DataComponentId::RABBIT_VARIANT,
+            ItemComponent::PigVariant { .. } => DataComponentId::PIG_VARIANT,
+            ItemComponent::CowVariant { .. } => DataComponentId::COW_VARIANT,
+            ItemComponent::ChickenVariant { .. } => DataComponentId::CHICKEN_VARIANT,
+            ItemComponent::FrogVariant { .. } => DataComponentId::FROG_VARIANT,
+            ItemComponent::HorseVariant { .. } => DataComponentId::HORSE_VARIANT,
+            ItemComponent::PaintingVariant { .. } => DataComponentId::PAINTING_VARIANT,
+            ItemComponent::LlamaVariant { .. } => DataComponentId::LLAMA_VARIANT,
+            ItemComponent::AxolotlVariant { .. } => DataComponentId::AXOLOTL_VARIANT,
+            ItemComponent::CatVariant { .. } => DataComponentId::CAT_VARIANT,
+            ItemComponent::CatCollar { .. } => DataComponentId::CAT_COLLAR,
+            ItemComponent::SheepColor { .. } => DataComponentId::SHEEP_COLOR,
+            ItemComponent::ShulkerColor { .. } => DataComponentId::SHULKER_COLOR,
         }
     }
 
@@ -1094,7 +1158,7 @@ impl ItemStack {
 
     /// Attach a component to the item stack.
     pub fn insert_component(&mut self, component: ItemComponent) {
-        let id = component.id() as usize;
+        let id = component.id();
         if let Patchable::Default(default) = &self.components[id] {
             // We don't need to add a components if its default for the item kind.
             if **default == component {
@@ -1250,7 +1314,7 @@ impl<'a> Decode<'a> for ItemStack {
         }
 
         for component in components_added {
-            let id = component.id() as usize;
+            let id = component.id();
             let hash = component.hash();
             components[id] = Patchable::Added((Box::new(component), hash));
         }

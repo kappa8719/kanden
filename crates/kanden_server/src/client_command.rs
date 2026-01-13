@@ -1,11 +1,16 @@
 use bevy_app::prelude::*;
 use bevy_ecs::prelude::*;
-use kanden_entity::entity::Flags;
-use kanden_entity::{entity, Pose};
+use kanden_entity::{
+    entity::{self, DataSharedFlags},
+    Pose,
+};
 pub use kanden_protocol::packets::play::player_command_c2s::PlayerCommand;
-use kanden_protocol::packets::play::PlayerCommandC2s;
+use kanden_protocol::packets::play::{PlayerCommandC2s, PlayerInputC2s};
 
-use crate::event_loop::{EventLoopPreUpdate, PacketEvent};
+use crate::{
+    client::{Client, PlayerInputState},
+    event_loop::{EventLoopPreUpdate, PacketEvent},
+};
 
 pub struct ClientCommandPlugin;
 
@@ -65,44 +70,57 @@ pub struct LeaveBedEvent {
 
 fn handle_client_command(
     mut packets: EventReader<PacketEvent>,
-    mut clients: Query<(&mut entity::Pose, &mut Flags)>,
+    mut clients: Query<(
+        &mut entity::DataPose,
+        &mut DataSharedFlags,
+        &mut PlayerInputState,
+    )>,
     mut sprinting_events: EventWriter<SprintEvent>,
     mut sneaking_events: EventWriter<SneakEvent>,
     mut jump_with_horse_events: EventWriter<JumpWithHorseEvent>,
     mut leave_bed_events: EventWriter<LeaveBedEvent>,
 ) {
     for packet in packets.read() {
-        if let Some(pkt) = packet.decode::<PlayerCommandC2s>() {
-            match pkt.action {
-                PlayerCommand::StartSneaking => {
-                    if let Ok((mut pose, mut flags)) = clients.get_mut(packet.client) {
-                        pose.0 = Pose::Sneaking;
-                        flags.set_sneaking(true);
-                    }
-
+        if let Some(pkt) = packet.decode::<PlayerInputC2s>() {
+            if let Ok((mut pose, mut flags, mut input_state)) = clients.get_mut(packet.client) {
+                if !flags.sneaking() && pkt.flags.sneak() {
                     sneaking_events.send(SneakEvent {
                         client: packet.client,
                         state: SneakState::Start,
                     });
-                }
-                PlayerCommand::StopSneaking => {
-                    if let Ok((mut pose, mut flags)) = clients.get_mut(packet.client) {
-                        pose.0 = Pose::Standing;
-                        flags.set_sneaking(false);
-                    }
 
+                    pose.0 = Pose::Sneaking;
+                    flags.set_sneaking(true);
+                }
+
+                if flags.sneaking() && !pkt.flags.sneak() {
                     sneaking_events.send(SneakEvent {
                         client: packet.client,
                         state: SneakState::Stop,
                     });
+
+                    pose.0 = Pose::Standing;
+                    flags.set_sneaking(false);
                 }
-                PlayerCommand::LeaveBed => {
+
+                input_state.forward = pkt.flags.forward();
+                input_state.back = pkt.flags.back();
+                input_state.left = pkt.flags.left();
+                input_state.right = pkt.flags.right();
+                input_state.jump = pkt.flags.jump();
+                input_state.sneak = pkt.flags.sneak();
+                input_state.sprint = pkt.flags.sprint();
+            }
+        }
+        if let Some(pkt) = packet.decode::<PlayerCommandC2s>() {
+            match pkt.action {
+                PlayerCommand::StopSleeping => {
                     leave_bed_events.send(LeaveBedEvent {
                         client: packet.client,
                     });
                 }
                 PlayerCommand::StartSprinting => {
-                    if let Ok((_, mut flags)) = clients.get_mut(packet.client) {
+                    if let Ok((_, mut flags, _)) = clients.get_mut(packet.client) {
                         flags.set_sprinting(true);
                     }
 
@@ -112,7 +130,7 @@ fn handle_client_command(
                     });
                 }
                 PlayerCommand::StopSprinting => {
-                    if let Ok((_, mut flags)) = clients.get_mut(packet.client) {
+                    if let Ok((_, mut flags, _)) = clients.get_mut(packet.client) {
                         flags.set_sprinting(false);
                     }
 
@@ -121,7 +139,7 @@ fn handle_client_command(
                         state: SprintState::Stop,
                     });
                 }
-                PlayerCommand::StartJumpWithHorse => {
+                PlayerCommand::StartRidingJump => {
                     jump_with_horse_events.send(JumpWithHorseEvent {
                         client: packet.client,
                         state: JumpWithHorseState::Start {
@@ -129,15 +147,15 @@ fn handle_client_command(
                         },
                     });
                 }
-                PlayerCommand::StopJumpWithHorse => {
+                PlayerCommand::StopRidingJump => {
                     jump_with_horse_events.send(JumpWithHorseEvent {
                         client: packet.client,
                         state: JumpWithHorseState::Stop,
                     });
                 }
-                PlayerCommand::OpenHorseInventory => {} // TODO
-                PlayerCommand::StartFlyingWithElytra => {
-                    if let Ok((mut pose, _)) = clients.get_mut(packet.client) {
+                PlayerCommand::OpenInventory => {} // TODO
+                PlayerCommand::StartFallFlying => {
+                    if let Ok((mut pose, _, _)) = clients.get_mut(packet.client) {
                         pose.0 = Pose::FallFlying;
                     }
 

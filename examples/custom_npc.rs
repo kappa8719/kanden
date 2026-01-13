@@ -1,4 +1,4 @@
-use kanden::entity::player::PlayerEntityBundle;
+use kanden::entity::player::PlayerBundle;
 use kanden::player_list::{DisplayName, Listed, PlayerListEntryBundle};
 use kanden::prelude::*;
 use kanden::text::IntoText;
@@ -46,7 +46,7 @@ fn setup(
 
     let npc_id = UniqueId::default();
 
-    commands.spawn(PlayerEntityBundle {
+    commands.spawn(PlayerBundle {
         layer: EntityLayerId(layer_id),
         uuid: npc_id,
         position: Position::new((0.0, f64::from(SPAWN_Y) + 1.0, 6.0)),

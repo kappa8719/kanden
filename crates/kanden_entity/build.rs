@@ -3,6 +3,7 @@ use std::collections::BTreeMap;
 use anyhow::Context;
 use heck::{ToPascalCase, ToShoutySnakeCase, ToSnakeCase};
 use kanden_build_utils::{ident, rerun_if_changed, write_generated_file};
+use kanden_protocol::profile::GameProfile;
 use proc_macro2::TokenStream;
 use quote::quote;
 use serde::Deserialize;
@@ -57,10 +58,9 @@ enum Value {
     BlockPos(BlockPos),
     OptionalBlockPos(Option<BlockPos>),
     Facing(String),
-    LazyEntityReference(Option<()>), // TODO
+    OptionalLivingEntityReference(Option<()>), // TODO
     BlockState(String),
     OptionalBlockState(Option<String>),
-    NbtCompound(String),
     Particle(String),
     ParticleList(Vec<String>),
     VillagerData {
@@ -78,10 +78,13 @@ enum Value {
     FrogVariant(String),
     PigVariant(String),
     ChickenVariant(String),
+    ZombieNautilusVariant(String),
     OptionalGlobalPos(Option<()>), // TODO
     PaintingVariant(String),
     SnifferState(String),
     ArmadilloState(String),
+    CopperGolemState(String),
+    OxidationLevel(String),
     Vector3f {
         x: f32,
         y: f32,
@@ -93,6 +96,10 @@ enum Value {
         z: f32,
         w: f32,
     },
+    Profile {
+        partial_profile: GameProfile,
+    },
+    Arm(String),
 }
 
 #[derive(Deserialize, Debug, Clone, Copy)]
@@ -118,28 +125,32 @@ impl Value {
             Value::BlockPos(_) => 10,
             Value::OptionalBlockPos(_) => 11,
             Value::Facing(_) => 12,
-            Value::LazyEntityReference(_) => 13,
+            Value::OptionalLivingEntityReference(_) => 13,
             Value::BlockState(_) => 14,
             Value::OptionalBlockState(_) => 15,
-            Value::NbtCompound(_) => 16,
-            Value::Particle(_) => 17,
-            Value::ParticleList(_) => 18,
-            Value::VillagerData { .. } => 19,
-            Value::OptionalInt(_) => 20,
-            Value::EntityPose(_) => 21,
-            Value::CatVariant(_) => 22,
-            Value::CowVariant(_) => 23,
-            Value::WolfVariant(_) => 24,
-            Value::WolfSoundVariant(_) => 25,
-            Value::FrogVariant(_) => 26,
-            Value::PigVariant(_) => 27,
-            Value::ChickenVariant(_) => 28,
+            Value::Particle(_) => 16,
+            Value::ParticleList(_) => 17,
+            Value::VillagerData { .. } => 18,
+            Value::OptionalInt(_) => 19,
+            Value::EntityPose(_) => 20,
+            Value::CatVariant(_) => 21,
+            Value::CowVariant(_) => 22,
+            Value::WolfVariant(_) => 23,
+            Value::WolfSoundVariant(_) => 24,
+            Value::FrogVariant(_) => 25,
+            Value::PigVariant(_) => 26,
+            Value::ChickenVariant(_) => 27,
+            Value::ZombieNautilusVariant(_) => 28,
             Value::OptionalGlobalPos(_) => 29,
             Value::PaintingVariant(_) => 30,
             Value::SnifferState(_) => 31,
             Value::ArmadilloState(_) => 32,
-            Value::Vector3f { .. } => 33,
-            Value::Quaternionf { .. } => 34,
+            Value::CopperGolemState(_) => 33,
+            Value::OxidationLevel(_) => 34,
+            Value::Vector3f { .. } => 35,
+            Value::Quaternionf { .. } => 36,
+            Value::Profile { .. } => 37,
+            Value::Arm(_) => 38,
         }
     }
 
@@ -158,10 +169,9 @@ impl Value {
             Value::BlockPos(_) => quote!(kanden_protocol::BlockPos),
             Value::OptionalBlockPos(_) => quote!(Option<kanden_protocol::BlockPos>),
             Value::Facing(_) => quote!(kanden_protocol::Direction),
-            Value::LazyEntityReference(_) => quote!(()), // TODO
+            Value::OptionalLivingEntityReference(_) => quote!(()), // TODO
             Value::BlockState(_) => quote!(kanden_protocol::BlockState),
             Value::OptionalBlockState(_) => quote!(kanden_protocol::BlockState),
-            Value::NbtCompound(_) => quote!(kanden_nbt::Compound),
             Value::Particle(_) => {
                 quote!(kanden_protocol::packets::play::level_particles_s2c::Particle)
             }
@@ -178,12 +188,17 @@ impl Value {
             Value::FrogVariant(_) => quote!(crate::FrogKind),
             Value::PigVariant(_) => quote!(crate::PigKind),
             Value::ChickenVariant(_) => quote!(crate::ChickenKind),
+            Value::ZombieNautilusVariant(_) => quote!(crate::ZombieNautilusKind),
             Value::OptionalGlobalPos(_) => quote!(()), // TODO
             Value::PaintingVariant(_) => quote!(crate::PaintingKind),
             Value::SnifferState(_) => quote!(crate::SnifferState),
             Value::ArmadilloState(_) => quote!(crate::ArmadilloState),
+            Value::CopperGolemState(_) => quote!(crate::CopperGolemState),
+            Value::OxidationLevel(_) => quote!(crate::OxidationLevel),
             Value::Vector3f { .. } => quote!(kanden_math::Vec3),
             Value::Quaternionf { .. } => quote!(kanden_math::Quat),
+            Value::Profile { .. } => quote!(crate::Profile),
+            Value::Arm(_) => quote!(kanden_protocol::Arm),
         }
     }
 
@@ -198,10 +213,12 @@ impl Value {
                 assert!(txt.is_empty());
                 quote!(kanden_protocol::Text::default())
             }
-            Value::OptionalTextComponent(t) => {
-                assert!(t.is_none());
-                quote!(None)
-            }
+            Value::OptionalTextComponent(t) => match t {
+                Some(text) => {
+                    quote!(Some(kanden_protocol::Text::text(#text)))
+                }
+                None => quote!(None),
+            },
             Value::ItemStack(_stack) => {
                 quote!(kanden_protocol::ItemStack::default())
             }
@@ -224,7 +241,7 @@ impl Value {
                 let variant = ident(f.to_pascal_case());
                 quote!(kanden_protocol::Direction::#variant)
             }
-            Value::LazyEntityReference(_) => {
+            Value::OptionalLivingEntityReference(_) => {
                 quote!(())
             }
             Value::BlockState(_) => {
@@ -233,10 +250,6 @@ impl Value {
             Value::OptionalBlockState(bs) => {
                 assert!(bs.is_none());
                 quote!(kanden_protocol::BlockState::default())
-            }
-            Value::NbtCompound(s) => {
-                assert_eq!(s, "{}");
-                quote!(kanden_nbt::Compound::default())
             }
             Value::Particle(p) => match p.to_pascal_case().as_str() {
                 // TODO: fix this, now an entyity has this as the default, so we need to extract
@@ -308,9 +321,15 @@ impl Value {
                 let variant = ident(stripped_variant.to_pascal_case());
                 quote!(crate::ChickenKind::#variant)
             }
+            Value::ZombieNautilusVariant(c) => {
+                let stripped_variant = c.trim_start_matches("minecraft");
+                let variant = ident(stripped_variant.to_pascal_case());
+                quote!(crate::ZombieNautilusKind::#variant)
+            }
             Value::OptionalGlobalPos(_) => quote!(()),
             Value::PaintingVariant(p) => {
-                let variant = ident(p.to_pascal_case());
+                let stripped_variant = p.trim_start_matches("minecraft");
+                let variant = ident(stripped_variant.to_pascal_case());
                 quote!(crate::PaintingKind::#variant)
             }
             Value::SnifferState(s) => {
@@ -321,10 +340,37 @@ impl Value {
                 let state = ident(s.to_pascal_case());
                 quote!(crate::ArmadilloState::#state)
             }
+            Value::CopperGolemState(s) => {
+                let state = ident(s.to_pascal_case());
+                quote!(crate::CopperGolemState::#state)
+            }
+            Value::OxidationLevel(s) => {
+                let state = ident(s.to_pascal_case());
+                quote!(crate::OxidationLevel::#state)
+            }
             Value::Vector3f { x, y, z } => quote!(kanden_math::Vec3::new(#x, #y, #z)),
             Value::Quaternionf { x, y, z, w } => quote! {
                 kanden_math::Quat::from_xyzw(#x, #y, #z, #w)
             },
+            Value::Profile { partial_profile } => {
+                let GameProfile {
+                    id,
+                    name,
+                    properties,
+                } = partial_profile;
+                assert!(properties.is_empty());
+                quote!(crate::Profile {
+                    partial_profile: kanden_protocol::profile::GameProfile {
+                        id: String::from(#id),
+                        name: String::from(#name),
+                        properties: vec![],
+                    }
+                })
+            }
+            Value::Arm(s) => {
+                let state = ident(s.to_pascal_case());
+                quote!(kanden_protocol::Arm::#state)
+            }
         }
     }
 
@@ -367,6 +413,8 @@ fn build_entities() -> anyhow::Result<TokenStream> {
 
     for (entity_name, entity) in entities.clone() {
         let entity_name_ident = ident(&entity_name);
+        let pascal_entity_name_ident = ident(entity_name.to_pascal_case());
+
         let stripped_shouty_entity_name = strip_entity_suffix(&entity_name).to_shouty_snake_case();
         let stripped_shouty_entity_name_ident = ident(&stripped_shouty_entity_name);
         let stripped_snake_entity_name = strip_entity_suffix(&entity_name).to_snake_case();
@@ -630,7 +678,7 @@ fn build_entities() -> anyhow::Result<TokenStream> {
         module_body.extend([quote! {
             #[doc = #marker_doc]
             #[derive(bevy_ecs::component::Component, Copy, Clone, Default, Debug)]
-            pub struct #entity_name_ident;
+            pub struct #pascal_entity_name_ident;
         }]);
 
         match entity_name.as_str() {
@@ -641,7 +689,7 @@ fn build_entities() -> anyhow::Result<TokenStream> {
                     pub struct Absorption(pub f32);
                 }]);
             }
-            "PlayerEntity" => {
+            "Player" => {
                 module_body.extend([quote! {
                     #[doc = "Special untracked component for `PlayerEntity` entities."]
                     #[derive(bevy_ecs::component::Component, Copy, Clone, Debug)]
@@ -673,7 +721,7 @@ fn build_entities() -> anyhow::Result<TokenStream> {
         /// Special case for `living::Absorption`.
         /// Updates the `AbsorptionAmount` component of the player entity.
         fn update_living_and_player_absorption(
-            mut query: Query<(&living::Absorption, &mut player::AbsorptionAmount), Changed<living::Absorption>>
+            mut query: Query<(&living::Absorption, &mut player::DataPlayerAbsorption), Changed<living::Absorption>>
         ) {
             for (living_absorption, mut player_absorption) in &mut query {
                 player_absorption.0 = living_absorption.0;

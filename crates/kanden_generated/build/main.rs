@@ -3,8 +3,10 @@ use kanden_build_utils::write_generated_file;
 mod attributes;
 mod block;
 mod chunk_view;
+mod data_components;
 mod item;
 mod packet_id;
+mod particles;
 mod sound;
 mod status_effects;
 
@@ -16,6 +18,8 @@ pub fn main() -> anyhow::Result<()> {
     write_generated_file(packet_id::build()?, "packet_id.rs")?;
     write_generated_file(chunk_view::build(), "chunk_view.rs")?;
     write_generated_file(status_effects::build()?, "status_effects.rs")?;
+    write_generated_file(data_components::build()?, "data_components.rs")?;
+    write_generated_file(particles::build()?, "particles.rs")?;
 
     Ok(())
 }

@@ -3,11 +3,11 @@
 use std::collections::HashMap;
 
 use bevy_ecs::query::QueryData;
-use kanden::entity::cow::CowEntityBundle;
-use kanden::entity::entity::Flags;
-use kanden::entity::living::Health;
-use kanden::entity::pig::PigEntityBundle;
-use kanden::entity::player::PlayerEntityBundle;
+use kanden::entity::cow::CowBundle;
+use kanden::entity::entity::DataSharedFlags;
+use kanden::entity::living::DataHealth;
+use kanden::entity::pig::PigBundle;
+use kanden::entity::player::PlayerBundle;
 use kanden::entity::{EntityAnimations, EntityStatuses, OnGround, Velocity};
 use kanden::interact_block::InteractBlockEvent;
 use kanden::inventory::HeldItem;
@@ -15,6 +15,7 @@ use kanden::log::debug;
 use kanden::math::Vec3Swizzles;
 use kanden::nbt::{compound, List};
 use kanden::prelude::*;
+use kanden::protocol::GlobalPos;
 use kanden::scoreboard::*;
 use kanden::status::RequestRespawnEvent;
 
@@ -139,20 +140,20 @@ fn setup(
     let ctf_team_layers = CtfLayers::init(&mut commands, &server);
 
     // add some debug entities to the ctf entity layers
-    let mut flags = Flags::default();
+    let mut flags = DataSharedFlags::default();
     flags.set_glowing(true);
-    let mut pig = commands.spawn(PigEntityBundle {
+    let mut pig = commands.spawn(PigBundle {
         layer: EntityLayerId(ctf_team_layers.friendly_layers[&Team::Red]),
         position: Position([-30.0, 65.0, 2.0].into()),
-        entity_flags: flags.clone(),
+        entity_data_shared_flags: flags.clone(),
         ..Default::default()
     });
     pig.insert(Team::Red);
 
-    let mut cow = commands.spawn(CowEntityBundle {
+    let mut cow = commands.spawn(CowBundle {
         layer: EntityLayerId(ctf_team_layers.friendly_layers[&Team::Blue]),
         position: Position([30.0, 65.0, 2.0].into()),
-        entity_flags: flags,
+        entity_data_shared_flags: flags,
         ..Default::default()
     });
     cow.insert(Team::Blue);
@@ -369,7 +370,7 @@ fn init_clients(
             &mut VisibleEntityLayers,
             &mut Position,
             &mut GameMode,
-            &mut Health,
+            &mut DataHealth,
         ),
         Added<Client>,
     >,
@@ -636,19 +637,19 @@ fn do_team_selector_portals(
             ent_layers.as_mut().0.insert(friendly_layer);
 
             // Copy the player entity to the friendly layer, and make them glow.
-            let mut flags = Flags::default();
+            let mut flags = DataSharedFlags::default();
             flags.set_glowing(true);
-            let mut player_glowing = commands.spawn(PlayerEntityBundle {
+            let mut player_glowing = commands.spawn(PlayerBundle {
                 layer: EntityLayerId(friendly_layer),
                 uuid: *unique_id,
-                entity_flags: flags,
+                entity_data_shared_flags: flags,
                 position: *pos,
                 ..Default::default()
             });
             player_glowing.insert(ClonedEntity(player));
 
             let enemy_layer = ctf_layers.enemy_layers[&team];
-            let mut player_enemy = commands.spawn(PlayerEntityBundle {
+            let mut player_enemy = commands.spawn(PlayerBundle {
                 layer: EntityLayerId(enemy_layer),
                 uuid: *unique_id,
                 position: *pos,
@@ -919,7 +920,7 @@ struct CombatQuery {
     pos: &'static Position,
     state: &'static mut CombatState,
     statuses: &'static mut EntityStatuses,
-    health: &'static mut Health,
+    health: &'static mut DataHealth,
     inventory: &'static Inventory,
     held_item: &'static HeldItem,
     team: &'static Team,
@@ -990,8 +991,8 @@ fn handle_combat_events(
 
         attacker.state.has_bonus_knockback = false;
 
-        victim.client.trigger_status(EntityStatus::PlayAttackSound);
-        victim.statuses.trigger(EntityStatus::PlayAttackSound);
+        victim.client.trigger_status(EntityStatus::StartAttacking);
+        victim.statuses.trigger(EntityStatus::StopAttacking);
 
         let stack = attacker.inventory.slot(attacker.held_item.slot());
 
@@ -1021,7 +1022,7 @@ fn necromancy(
         &mut VisibleChunkLayer,
         &mut RespawnPosition,
         &Team,
-        &mut Health,
+        &mut DataHealth,
     )>,
     mut events: EventReader<RequestRespawnEvent>,
     layers: Query<Entity, (With<ChunkLayer>, With<EntityLayer>)>,
@@ -1030,7 +1031,10 @@ fn necromancy(
         if let Ok((mut visible_chunk_layer, mut respawn_pos, team, mut health)) =
             clients.get_mut(event.client)
         {
-            respawn_pos.pos = team.spawn_pos().into();
+            respawn_pos.pos = GlobalPos {
+                dimension_name: ident!("overworld").to_string_ident(),
+                position: team.spawn_pos().into(),
+            };
             health.0 = PLAYER_MAX_HEALTH;
 
             let main_layer = layers.single();

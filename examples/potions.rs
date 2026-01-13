@@ -1,15 +1,16 @@
-use rand::seq::SliceRandom;
-use rand::Rng;
 use kanden::client::despawn_disconnected_clients;
 use kanden::entity::active_status_effects::{ActiveStatusEffect, ActiveStatusEffects};
+use kanden::entity::entity::DataSharedFlags;
+use kanden::entity::living::DataHealth;
 use kanden::log::LogPlugin;
 use kanden::network::ConnectionMode;
 use kanden::prelude::*;
 use kanden::status_effects::{AttributeModifier, StatusEffect};
 use kanden_server::entity::attributes::{EntityAttribute, EntityAttributes};
-use kanden_server::entity::entity::Flags;
-use kanden_server::entity::living::{Absorption, Health};
+use kanden_server::entity::living::Absorption;
 use kanden_server::status_effect::{StatusEffectAdded, StatusEffectRemoved};
+use rand::seq::SliceRandom;
+use rand::Rng;
 
 const SPAWN_Y: i32 = 64;
 
@@ -157,7 +158,7 @@ fn adjust_modifier_amount(amplifier: u8, amount: f64) -> f64 {
 
 fn apply_potion_attribute(
     attributes: &mut Mut<EntityAttributes>,
-    health: &mut Option<Mut<Health>>,
+    health: &mut Option<Mut<DataHealth>>,
     amplifier: u8,
     attr: AttributeModifier,
     name: &str,
@@ -182,7 +183,7 @@ fn apply_potion_attribute(
 
 fn remove_potion_attribute(
     attributes: &mut Mut<EntityAttributes>,
-    health: &mut Option<Mut<Health>>,
+    health: &mut Option<Mut<DataHealth>>,
     attr: AttributeModifier,
     name: &str,
 ) {
@@ -204,9 +205,9 @@ pub fn handle_status_effect_added(
     mut clients: Query<(
         &ActiveStatusEffects,
         &mut EntityAttributes,
-        Option<&mut Health>,
+        Option<&mut DataHealth>,
         Option<&mut Absorption>,
-        &mut Flags,
+        &mut DataSharedFlags,
     )>,
     mut events: EventReader<StatusEffectAdded>,
 ) {
@@ -260,9 +261,9 @@ pub fn handle_status_effect_added(
 pub fn handle_status_effect_removed(
     mut clients: Query<(
         &mut EntityAttributes,
-        Option<&mut Health>,
+        Option<&mut DataHealth>,
         Option<&mut Absorption>,
-        &mut Flags,
+        &mut DataSharedFlags,
     )>,
     mut events: EventReader<StatusEffectRemoved>,
 ) {
@@ -299,7 +300,11 @@ pub fn handle_status_effect_removed(
 }
 
 pub fn handle_status_effect_update(
-    mut clients: Query<(&ActiveStatusEffects, &EntityAttributes, Option<&mut Health>)>,
+    mut clients: Query<(
+        &ActiveStatusEffects,
+        &EntityAttributes,
+        Option<&mut DataHealth>,
+    )>,
 ) {
     for (status, attributes, mut health) in &mut clients.iter_mut() {
         for effect in status.get_current_effects() {

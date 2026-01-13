@@ -1,11 +1,11 @@
 use bevy_app::prelude::*;
 use bevy_ecs::prelude::*;
-use tracing::warn;
 use kanden_entity::{Look, Position, Velocity};
 use kanden_math::{DVec3, Vec3};
-use kanden_protocol::packets::play::player_position_s2c::TeleportRelativeFlags;
 use kanden_protocol::packets::play::{AcceptTeleportationC2s, PlayerPositionS2c};
+use kanden_protocol::realtive::Relative;
 use kanden_protocol::WritePacket;
+use tracing::warn;
 
 use crate::client::{update_view_and_layers, Client, UpdateClientsSet};
 use crate::event_loop::{EventLoopPreUpdate, PacketEvent};
@@ -64,6 +64,51 @@ impl TeleportState {
     }
 }
 
+pub fn request_teleport(
+    client: &mut Client,
+    state: &mut TeleportState,
+    position: &Position,
+    velocity: &Velocity,
+    look: &Look,
+) {
+    let changed_pos = position.0 != state.synced_pos;
+    let changed_velocity = velocity.0 != state.synced_velocity;
+    let changed_yaw = look.yaw != state.synced_look.yaw;
+    let changed_pitch = look.pitch != state.synced_look.pitch;
+
+    if changed_pos || changed_velocity || changed_yaw || changed_pitch {
+        state.synced_pos = position.0;
+        state.synced_velocity = velocity.0;
+        state.synced_look = *look;
+
+        let flags = Relative::new()
+            .with_x(!changed_pos)
+            .with_y(!changed_pos)
+            .with_z(!changed_pos)
+            .with_x_vel(!changed_velocity)
+            .with_y_vel(!changed_velocity)
+            .with_z_vel(!changed_velocity)
+            .with_y_rot(!changed_yaw)
+            .with_x_rot(!changed_pitch);
+
+        client.write_packet(&PlayerPositionS2c {
+            position: if changed_pos { position.0 } else { DVec3::ZERO },
+            velocity: if changed_velocity {
+                velocity.0.into()
+            } else {
+                DVec3::ZERO
+            },
+            yaw: if changed_yaw { look.yaw } else { 0.0 },
+            pitch: if changed_pitch { look.pitch } else { 0.0 },
+            flags,
+            teleport_id: (state.teleport_id_counter as i32).into(),
+        });
+
+        state.pending_teleports = state.pending_teleports.wrapping_add(1);
+        state.teleport_id_counter = state.teleport_id_counter.wrapping_add(1);
+    }
+}
+
 /// Syncs the client's position and look with the server.
 ///
 /// This should happen after chunks are loaded so the client doesn't fall though
@@ -86,7 +131,7 @@ fn teleport(
             state.synced_velocity = velocity.0;
             state.synced_look = *look;
 
-            let flags = TeleportRelativeFlags::new()
+            let flags = Relative::new()
                 .with_x(!changed_pos)
                 .with_y(!changed_pos)
                 .with_z(!changed_pos)

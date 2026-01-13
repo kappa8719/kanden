@@ -1,10 +1,14 @@
 #![allow(clippy::type_complexity)]
 
 use bevy_ecs::query::QueryData;
-use rand::Rng;
-use kanden::entity::EntityStatuses;
+use kanden::entity::living::DataHealth;
+use kanden::entity::{EntityId, EntityStatuses, OnGround, Velocity};
 use kanden::math::Vec3Swizzles;
-use kanden::prelude::*;
+use kanden::protocol::lpvec::LpVec3;
+use kanden::protocol::packets::play::{DamageEventS2c, HurtAnimationS2c};
+use kanden::protocol::{Decode, Encode, VarInt, WritePacket};
+use kanden::{prelude::*, Layer};
+use rand::Rng;
 
 const SPAWN_Y: i32 = 64;
 const ARENA_RADIUS: i32 = 32;
@@ -28,6 +32,7 @@ pub fn main() {
                 init_clients,
                 despawn_disconnected_clients,
                 teleport_oob_clients,
+                debug,
             ),
         )
         .run();
@@ -112,14 +117,21 @@ fn init_clients(
 #[derive(QueryData)]
 #[query_data(mutable)]
 struct CombatQuery {
+    id: &'static EntityId,
     client: &'static mut Client,
+    velocity: &'static mut Velocity,
+    look: &'static Look,
     pos: &'static Position,
+    on_ground: &'static mut OnGround,
     state: &'static mut CombatState,
     statuses: &'static mut EntityStatuses,
+    health: &'static mut DataHealth,
+    layer: &'static mut VisibleChunkLayer,
 }
 
 fn handle_combat_events(
     server: Res<Server>,
+    mut layers: Query<&mut ChunkLayer>,
     mut clients: Query<CombatQuery>,
     mut sprinting: EventReader<SprintEvent>,
     mut interact_entity: EventReader<InteractEntityEvent>,
@@ -151,29 +163,30 @@ fn handle_combat_events(
 
         let victim_pos = victim.pos.0.xz();
         let attacker_pos = attacker.pos.0.xz();
-
-        let dir = (victim_pos - attacker_pos).normalize().as_vec2();
-
-        let knockback_xz = if attacker.state.has_bonus_knockback {
-            18.0
-        } else {
-            8.0
-        };
-        let knockback_y = if attacker.state.has_bonus_knockback {
-            8.432
-        } else {
-            6.432
-        };
+        let dir = (attacker_pos - victim_pos).normalize().as_vec2();
 
         victim
-            .client
-            .set_velocity([dir.x * knockback_xz, knockback_y, dir.y * knockback_xz]);
+            .velocity
+            .apply_knockback(0.5, dir.x, dir.y, victim.on_ground.0);
 
         attacker.state.has_bonus_knockback = false;
 
-        victim.client.trigger_status(EntityStatus::PlayAttackSound);
+        let Ok(mut layer) = layers.get_mut(victim.layer.0) else {
+            return;
+        };
 
-        victim.statuses.trigger(EntityStatus::PlayAttackSound);
+        let mut layer_writer = layer.view_writer(victim.pos.0);
+        layer_writer.write_packet(&DamageEventS2c {
+            entity_id: VarInt(victim.id.get()),
+            source_type_id: VarInt(29),
+            source_cause_id: VarInt(-1),
+            source_direct_id: VarInt(-1),
+            source_pos: Some(attacker.pos.0.into()),
+        });
+        layer_writer.write_packet(&HurtAnimationS2c {
+            entity_id: VarInt(victim.id.get()),
+            yaw: victim.look.yaw,
+        });
     }
 }
 
@@ -182,5 +195,13 @@ fn teleport_oob_clients(mut clients: Query<&mut Position, With<Client>>) {
         if pos.0.y < 0.0 {
             pos.set([0.0, f64::from(SPAWN_Y), 0.0]);
         }
+    }
+}
+
+fn debug(mut clients: Query<(&mut Client, &Velocity)>) {
+    for (mut client, velocity) in clients.iter_mut() {
+        let mut buf = Vec::new();
+        velocity.0.encode(&mut buf).unwrap();
+        client.send_action_bar_message(format!("{buf:?}"));
     }
 }

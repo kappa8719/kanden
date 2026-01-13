@@ -1,6 +1,6 @@
 use bevy_app::prelude::*;
 use bevy_ecs::prelude::*;
-use kanden_entity::player::{self, PlayerModelParts};
+use kanden_entity::avatar::{DataPlayerMainHand, DataPlayerModeCustomisation};
 use kanden_protocol::packets::play::client_information_c2s::ChatMode;
 use kanden_protocol::packets::play::ClientInformationC2s;
 
@@ -30,8 +30,8 @@ fn handle_client_settings(
     mut clients: Query<(
         &mut ViewDistance,
         &mut ClientSettings,
-        &mut PlayerModelParts,
-        &mut player::MainArm,
+        &mut DataPlayerModeCustomisation,
+        &mut DataPlayerMainHand,
     )>,
 ) {
     for packet in packets.read() {
@@ -48,8 +48,10 @@ fn handle_client_settings(
                 settings.enable_text_filtering = pkt.enable_text_filtering;
                 settings.allow_server_listings = pkt.allow_server_listings;
 
-                model_parts.set_if_neq(PlayerModelParts(u8::from(pkt.displayed_skin_parts) as i8));
-                main_arm.set_if_neq(player::MainArm(pkt.main_arm as i8));
+                model_parts.set_if_neq(DataPlayerModeCustomisation(u8::from(
+                    pkt.displayed_skin_parts,
+                ) as i8));
+                main_arm.set_if_neq(DataPlayerMainHand(pkt.main_arm));
             }
         }
     }

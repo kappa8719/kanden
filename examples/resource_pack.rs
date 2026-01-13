@@ -1,6 +1,6 @@
 #![allow(clippy::type_complexity)]
 
-use kanden::entity::sheep::SheepEntityBundle;
+use kanden::entity::sheep::SheepBundle;
 use kanden::message::SendMessage;
 use kanden::prelude::*;
 use kanden::protocol::packets::play::resource_pack_c2s::ResourcePackStatus;
@@ -46,7 +46,7 @@ fn setup(
 
     let layer_ent = commands.spawn(layer).id();
 
-    commands.spawn(SheepEntityBundle {
+    commands.spawn(SheepBundle {
         layer: EntityLayerId(layer_ent),
         position: Position::new([0.0, f64::from(SPAWN_Y) + 1.0, 2.0]),
         look: Look::new(180.0, 0.0),

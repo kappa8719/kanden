@@ -2,6 +2,7 @@
 #![allow(clippy::unseparated_literal_suffix, clippy::manual_string_new)]
 
 pub mod active_status_effects;
+pub mod activity;
 pub mod attributes;
 mod flags;
 pub mod hitbox;
@@ -12,13 +13,13 @@ pub mod tracked_data;
 use bevy_app::prelude::*;
 use bevy_ecs::prelude::*;
 use derive_more::{Deref, DerefMut};
+use kanden_math::{DVec3, Vec3};
+use kanden_protocol::{profile::GameProfile, Decode, Encode, VarInt};
+use kanden_server_common::{Despawned, UniqueId};
 pub use manager::EntityManager;
 use paste::paste;
 use tracing::warn;
 use tracked_data::TrackedData;
-use kanden_math::{DVec3, Vec3};
-use kanden_protocol::{Decode, Encode, VarInt};
-use kanden_server_common::{Despawned, UniqueId};
 
 use crate::attributes::TrackedEntityAttributes;
 
@@ -325,6 +326,37 @@ pub struct HeadYaw(pub f32);
 pub struct Velocity(pub Vec3);
 
 impl Velocity {
+    /// Calculate velocity with knockback applied
+    pub fn knockback_applied(
+        &self,
+        strength: f32,
+        mut x: f32,
+        mut z: f32,
+        on_ground: bool,
+    ) -> Self {
+        while x.mul_add(x, z * z) < 1.0E-5 {
+            x = (rand::random::<f32>() - rand::random::<f32>()) * 0.01;
+            z = (rand::random::<f32>() - rand::random::<f32>()) * 0.01;
+        }
+
+        let force_xz = Vec3::new(x, 0.0, z).normalize() * strength;
+        let applied = Vec3::new(
+            self.x / 2.0 - force_xz.x,
+            if on_ground {
+                (self.y / 2.0 + strength).min(0.4)
+            } else {
+                self.y
+            },
+            self.z / 2.0 - force_xz.z,
+        );
+
+        Self(applied)
+    }
+
+    pub fn apply_knockback(&mut self, strength: f32, x: f32, z: f32, on_ground: bool) {
+        *self = self.knockback_applied(strength, x, z, on_ground);
+    }
+
     pub fn to_packet_units(self) -> kanden_protocol::Velocity {
         kanden_protocol::Velocity::from_ms_f32(self.0.into())
     }
@@ -563,6 +595,12 @@ pub enum ChickenKind {
     Cold,
 }
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default, Debug, Encode, Decode)]
+pub enum ZombieNautilusKind {
+    #[default]
+    Temperate,
+    Warm,
+}
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default, Debug, Encode, Decode)]
 pub enum PaintingKind {
     #[default]
     Kebab,
@@ -607,6 +645,30 @@ pub enum SnifferState {
     Searching,
     Digging,
     Rising,
+}
+
+#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Default, Debug, Encode, Decode)]
+pub enum CopperGolemState {
+    #[default]
+    Idle,
+    GettingItem,
+    GettingNoItem,
+    DroppingItem,
+    DroppingNoItem,
+}
+
+#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Default, Debug, Encode, Decode)]
+pub enum OxidationLevel {
+    #[default]
+    Unaffected,
+    Exposed,
+    Weathered,
+    Oxidized,
+}
+
+#[derive(Clone, PartialEq, Eq, Debug, Encode, Decode)]
+pub struct Profile {
+    partial_profile: GameProfile,
 }
 
 #[derive(Clone, Copy, PartialEq, PartialOrd, Debug, Encode, Decode)]

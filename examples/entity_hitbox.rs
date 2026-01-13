@@ -4,13 +4,13 @@ use std::collections::HashMap;
 
 use bevy_app::prelude::*;
 use bevy_ecs::prelude::*;
-use entity::NameVisible;
-use kanden::entity::hoglin::HoglinEntityBundle;
-use kanden::entity::pig::PigEntityBundle;
-use kanden::entity::sheep::SheepEntityBundle;
-use kanden::entity::warden::WardenEntityBundle;
-use kanden::entity::zombie::ZombieEntityBundle;
-use kanden::entity::zombie_horse::ZombieHorseEntityBundle;
+use entity::DataCustomNameVisible;
+use kanden::entity::hoglin::HoglinBundle;
+use kanden::entity::pig::PigBundle;
+use kanden::entity::sheep::SheepBundle;
+use kanden::entity::warden::WardenBundle;
+use kanden::entity::zombie::ZombieBundle;
+use kanden::entity::zombie_horse::ZombieHorseBundle;
 use kanden::entity::{entity, Pose};
 use kanden::prelude::*;
 use kanden::rand::Rng;
@@ -97,47 +97,47 @@ fn spawn_entity(
         let layer = *layer;
 
         match rand::thread_rng().gen_range(0..7) {
-            0 => commands.spawn(SheepEntityBundle {
+            0 => commands.spawn(SheepBundle {
                 position,
                 layer,
-                entity_name_visible: NameVisible(true),
+                entity_data_custom_name_visible: DataCustomNameVisible(true),
                 ..Default::default()
             }),
-            1 => commands.spawn(PigEntityBundle {
+            1 => commands.spawn(PigBundle {
                 position,
                 layer,
-                entity_name_visible: NameVisible(true),
+                entity_data_custom_name_visible: DataCustomNameVisible(true),
                 ..Default::default()
             }),
-            2 => commands.spawn(ZombieEntityBundle {
+            2 => commands.spawn(ZombieBundle {
                 position,
                 layer,
-                entity_name_visible: NameVisible(true),
+                entity_data_custom_name_visible: DataCustomNameVisible(true),
                 ..Default::default()
             }),
-            3 => commands.spawn(ZombieHorseEntityBundle {
+            3 => commands.spawn(ZombieHorseBundle {
                 position,
                 layer,
-                entity_name_visible: NameVisible(true),
+                entity_data_custom_name_visible: DataCustomNameVisible(true),
                 ..Default::default()
             }),
-            4 => commands.spawn(WardenEntityBundle {
+            4 => commands.spawn(WardenBundle {
                 position,
                 layer,
-                entity_name_visible: NameVisible(true),
-                entity_pose: entity::Pose(Pose::Digging),
+                entity_data_custom_name_visible: DataCustomNameVisible(true),
+                entity_data_pose: entity::DataPose(Pose::Digging),
                 ..Default::default()
             }),
-            5 => commands.spawn(WardenEntityBundle {
+            5 => commands.spawn(WardenBundle {
                 position,
                 layer,
-                entity_name_visible: NameVisible(true),
+                entity_data_custom_name_visible: DataCustomNameVisible(true),
                 ..Default::default()
             }),
-            6 => commands.spawn(HoglinEntityBundle {
+            6 => commands.spawn(HoglinBundle {
                 position,
                 layer,
-                entity_name_visible: NameVisible(true),
+                entity_data_custom_name_visible: DataCustomNameVisible(true),
                 ..Default::default()
             }),
             _ => unreachable!(),
@@ -145,7 +145,10 @@ fn spawn_entity(
     }
 }
 
-fn intersections(query: Query<(Entity, &Hitbox)>, mut name_query: Query<&mut entity::CustomName>) {
+fn intersections(
+    query: Query<(Entity, &Hitbox)>,
+    mut name_query: Query<&mut entity::DataCustomName>,
+) {
     // This code only to show how hitboxes can be used
     let mut intersections = HashMap::new();
 

@@ -4,6 +4,13 @@ use url::Url;
 
 use crate::{Decode, Encode};
 
+#[derive(Clone, PartialEq, Eq, Debug, Serialize, Deserialize, Encode, Decode)]
+pub struct GameProfile {
+    pub id: String,
+    pub name: String,
+    pub properties: Vec<Property>,
+}
+
 /// A property from the game profile.
 #[derive(Clone, PartialEq, Eq, Debug, Serialize, Deserialize, Encode, Decode)]
 pub struct Property<S = String> {

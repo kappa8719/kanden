@@ -5,8 +5,8 @@ use std::ops::{Add, Sub};
 use anyhow::bail;
 use bitfield_struct::bitfield;
 use derive_more::From;
-use thiserror::Error;
 use kanden_math::{DVec3, IVec3};
+use thiserror::Error;
 
 use crate::direction::Direction;
 use crate::{Decode, Encode};
@@ -60,6 +60,10 @@ impl BlockPos {
             }
             _ => Err(Error(self)),
         }
+    }
+
+    pub fn as_ivec3(self) -> IVec3 {
+        self.into()
     }
 }
 
@@ -142,6 +146,34 @@ impl From<[i32; 3]> for BlockPos {
 impl From<BlockPos> for [i32; 3] {
     fn from(pos: BlockPos) -> Self {
         [pos.x, pos.y, pos.z]
+    }
+}
+
+impl From<BlockPos> for IVec3 {
+    fn from(pos: BlockPos) -> Self {
+        Self::new(pos.x, pos.y, pos.z)
+    }
+}
+
+impl From<IVec3> for BlockPos {
+    fn from(value: IVec3) -> Self {
+        Self::new(value.x, value.y, value.z)
+    }
+}
+
+impl Add<BlockPos> for BlockPos {
+    type Output = Self;
+
+    fn add(self, rhs: BlockPos) -> Self::Output {
+        Self::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
+    }
+}
+
+impl Sub<BlockPos> for BlockPos {
+    type Output = Self;
+
+    fn sub(self, rhs: BlockPos) -> Self::Output {
+        Self::new(self.x - rhs.x, self.y - rhs.y, self.z - rhs.z)
     }
 }
 

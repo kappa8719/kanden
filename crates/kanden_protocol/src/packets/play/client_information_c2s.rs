@@ -1,7 +1,7 @@
 use bitfield_struct::bitfield;
 
 use crate::packets::configuration::client_information_c2s::ParticleMode;
-use crate::{Bounded, Decode, Encode, Packet};
+use crate::{Arm, Bounded, Decode, Encode, Packet};
 
 #[derive(Clone, Debug, Encode, Decode, Packet)]
 pub struct ClientInformationC2s<'a> {
@@ -10,7 +10,7 @@ pub struct ClientInformationC2s<'a> {
     pub chat_mode: ChatMode,
     pub chat_colors: bool,
     pub displayed_skin_parts: DisplayedSkinParts,
-    pub main_arm: MainArm,
+    pub main_arm: Arm,
     pub enable_text_filtering: bool,
     pub allow_server_listings: bool,
     pub particle_mode: ParticleMode,
@@ -35,11 +35,4 @@ pub enum ChatMode {
     CommandsOnly,
     #[default]
     Hidden,
-}
-
-#[derive(Copy, Clone, PartialEq, Eq, Debug, Default, Encode, Decode)]
-pub enum MainArm {
-    Left,
-    #[default]
-    Right,
 }

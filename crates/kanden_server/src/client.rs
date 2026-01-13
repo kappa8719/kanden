@@ -11,11 +11,9 @@ use bevy_ecs::world::Command;
 use byteorder::{NativeEndian, ReadBytesExt};
 use bytes::{Bytes, BytesMut};
 use derive_more::{Deref, DerefMut, From, Into};
-use tracing::warn;
-use uuid::Uuid;
 use kanden_entity::attributes::{EntityAttributes, TrackedEntityAttributes};
-use kanden_entity::living::Health;
-use kanden_entity::player::{Food, PlayerEntityBundle, Saturation};
+use kanden_entity::living::DataHealth;
+use kanden_entity::player::{Food, PlayerBundle, Saturation};
 use kanden_entity::query::EntityInitQuery;
 use kanden_entity::tracked_data::TrackedData;
 use kanden_entity::{
@@ -30,7 +28,7 @@ use kanden_protocol::packets::play::{
     ChunksBiomesS2c, DisconnectS2c, EntityEventS2c, ForgetLevelChunkS2c, GameEventS2c,
     LevelParticlesS2c, PlayerCombatKillS2c, RemoveEntitiesS2c, SetChunkCacheCenterS2c,
     SetChunkCacheRadiusS2c, SetEntityDataS2c, SetEntityMotionS2c, SetHealthS2c, SoundS2c,
-    UpdateAttributesS2c,
+    TeleportEntityS2c, UpdateAttributesS2c,
 };
 use kanden_protocol::profile::Property;
 use kanden_protocol::sound::{Sound, SoundCategory, SoundDirect, SoundId};
@@ -39,6 +37,8 @@ use kanden_protocol::var_int::VarInt;
 use kanden_protocol::{BlockPos, ChunkPos, Encode, GameMode, Packet};
 use kanden_registry::RegistrySet;
 use kanden_server_common::{Despawned, UniqueId};
+use tracing::warn;
+use uuid::Uuid;
 
 use crate::layer::{ChunkLayer, EntityLayer, UpdateLayersPostClientSet, UpdateLayersPreClientSet};
 use crate::ChunkView;
@@ -140,7 +140,19 @@ pub struct ClientBundle {
     pub flying_speed: crate::abilities::FlyingSpeed,
     pub fov_modifier: crate::abilities::FovModifier,
     pub player_abilities_flags: crate::abilities::PlayerAbilitiesFlags,
-    pub player: PlayerEntityBundle,
+    pub player: PlayerBundle,
+    pub player_input_state: PlayerInputState,
+}
+
+#[derive(Component, Clone, PartialEq, Eq, Debug, Default)]
+pub struct PlayerInputState {
+    pub forward: bool,
+    pub back: bool,
+    pub left: bool,
+    pub right: bool,
+    pub jump: bool,
+    pub sneak: bool,
+    pub sprint: bool,
 }
 
 impl ClientBundle {
@@ -181,10 +193,11 @@ impl ClientBundle {
             flying_speed: Default::default(),
             fov_modifier: Default::default(),
             player_abilities_flags: Default::default(),
-            player: PlayerEntityBundle {
+            player: PlayerBundle {
                 uuid: UniqueId(args.uuid),
                 ..Default::default()
             },
+            player_input_state: Default::default(),
         }
     }
 }
@@ -1119,8 +1132,8 @@ pub(crate) fn update_game_mode(mut clients: Query<(&mut Client, &GameMode), Chan
 
 fn update_food_saturation_health(
     mut clients: Query<
-        (&mut Client, &Food, &Saturation, &Health),
-        Or<(Changed<Food>, Changed<Saturation>, Changed<Health>)>,
+        (&mut Client, &Food, &Saturation, &DataHealth),
+        Or<(Changed<Food>, Changed<Saturation>, Changed<DataHealth>)>,
     >,
 ) {
     for (mut client, food, saturation, health) in &mut clients {

@@ -3,6 +3,7 @@
 use std::mem;
 
 use kanden::prelude::*;
+use kanden_registry::serde::RGB;
 
 const BOARD_MIN_X: i32 = -30;
 const BOARD_MAX_X: i32 = 30;
@@ -44,7 +45,7 @@ fn setup(
     mut biomes: ResMut<BiomeRegistry>,
 ) {
     for (_, _, biome) in biomes.iter_mut() {
-        biome.effects.grass_color = Some(0x00ff00);
+        biome.effects.grass_color = Some(RGB(0x00ff00));
     }
 
     let mut layer = LayerBundle::new(ident!("overworld"), &dimensions, &biomes, &server);

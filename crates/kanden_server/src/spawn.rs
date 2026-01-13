@@ -2,15 +2,17 @@
 
 use std::borrow::Cow;
 use std::collections::BTreeSet;
+use std::u32;
 
 use bevy_ecs::prelude::*;
 use bevy_ecs::query::QueryData;
 use derive_more::{Deref, DerefMut};
-use kanden_entity::EntityLayerId;
+use kanden_entity::{EntityLayerId, Look, Position, Velocity};
+use kanden_math::DVec3;
 use kanden_protocol::packets::play::game_event_s2c::GameEventKind;
 use kanden_protocol::packets::play::respawn_s2c::DataKeptFlags;
 use kanden_protocol::packets::play::{
-    GameEventS2c, LoginS2c, RespawnS2c, SetDefaultSpawnPositionS2c,
+    GameEventS2c, LoginS2c, PlayerPositionS2c, RespawnS2c, SetDefaultSpawnPositionS2c,
 };
 use kanden_protocol::{BlockPos, GameMode, GlobalPos, Ident, VarInt, WritePacket};
 use kanden_registry::tags::TagsRegistry;
@@ -18,6 +20,7 @@ use kanden_registry::{DimensionTypeRegistry, RegistryCodec};
 
 use crate::client::{Client, ViewDistance, VisibleChunkLayer};
 use crate::layer::ChunkLayer;
+use crate::teleport::TeleportState;
 
 // Components for the join game and respawn packet.
 
@@ -60,13 +63,15 @@ impl Default for HasRespawnScreen {
 
 /// The position and angle that clients will respawn with. Also
 /// controls the position that compasses point towards.
-#[derive(Component, Copy, Clone, PartialEq, Default, Debug)]
+#[derive(Component, Clone, PartialEq, Default, Debug)]
 pub struct RespawnPosition {
     /// The position that clients will respawn at. This can be changed at any
     /// time to set the position that compasses point towards.
-    pub pos: BlockPos,
+    pub pos: GlobalPos<String>,
     /// The yaw angle that clients will respawn with (in degrees).
     pub yaw: f32,
+    /// The pitch angle that clients will respawn with (in degrees).
+    pub pitch: f32,
 }
 
 /// A convenient [`QueryData`] for obtaining client spawn components. Also see
@@ -90,6 +95,7 @@ pub struct ClientSpawnQuery {
 pub(super) fn initial_join(
     codec: Res<RegistryCodec>,
     tags: Res<TagsRegistry>,
+    dimension_types: Res<DimensionTypeRegistry>,
     mut clients: Query<(&mut Client, &VisibleChunkLayer, ClientSpawnQueryReadOnly), Added<Client>>,
     chunk_layers: Query<&ChunkLayer>,
 ) {
@@ -101,10 +107,11 @@ pub(super) fn initial_join(
         let dimension_names: BTreeSet<Ident<Cow<str>>> = codec
             .registry(DimensionTypeRegistry::KEY)
             .iter()
-            .map(|value| value.name.as_str_ident().into())
+            .map(|(name, _)| name.as_str_ident().into())
             .collect();
 
-        let dimension_type = chunk_layer.dimension_type();
+        let dimension_type_id = chunk_layer.dimension_type();
+        let dimension_name = dimension_types.name_of(*dimension_type_id).unwrap();
 
         let last_death_location = spawn.death_loc.0.as_ref().map(|(id, pos)| GlobalPos {
             dimension_name: id.as_str_ident().into(),
@@ -119,7 +126,7 @@ pub(super) fn initial_join(
             game_mode: *spawn.game_mode,
             previous_game_mode: spawn.prev_game_mode.0.into(),
             dimension_names: Cow::Owned(dimension_names),
-            dimension_name: Ident::new("overworld").unwrap(),
+            dimension_name: Ident::new(dimension_name.as_str()).unwrap(),
             hashed_seed: spawn.hashed_seed.0 as i64,
             max_players: VarInt(0), // Ignored by clients.
             view_distance: VarInt(i32::from(spawn.view_distance.get())),
@@ -131,7 +138,7 @@ pub(super) fn initial_join(
             last_death_location,
             portal_cooldown: VarInt(spawn.portal_cooldown.0),
             do_limited_crafting: false, // TODO
-            dimension_type: VarInt(dimension_type.get_value().into()),
+            dimension_type: VarInt(dimension_type_id.get_value().into()),
             enforeces_secure_chat: true,
             // FIXME: add missing sea_level
             sea_level: VarInt(0),
@@ -154,9 +161,15 @@ pub(super) fn initial_join(
 }
 
 pub(super) fn respawn(
+    dimension_types: Res<DimensionTypeRegistry>,
     mut clients: Query<
         (
             &mut Client,
+            &mut TeleportState,
+            &Position,
+            &Velocity,
+            &Look,
+            &RespawnPosition,
             &EntityLayerId,
             &DeathLocation,
             &HashedSeed,
@@ -169,8 +182,21 @@ pub(super) fn respawn(
     >,
     chunk_layers: Query<&ChunkLayer>,
 ) {
-    for (mut client, loc, death_loc, hashed_seed, game_mode, prev_game_mode, is_debug, is_flat) in
-        &mut clients
+    for (
+        mut client,
+        mut teleport_state,
+        position,
+        velocity,
+        look,
+        respawn_position,
+        loc,
+        death_loc,
+        hashed_seed,
+        game_mode,
+        prev_game_mode,
+        is_debug,
+        is_flat,
+    ) in &mut clients
     {
         if client.is_added() {
             // No need to respawn since we are sending the game join packet this tick.
@@ -181,7 +207,8 @@ pub(super) fn respawn(
             continue;
         };
 
-        let dimension_type = chunk_layer.dimension_type();
+        let dimension_type_id = chunk_layer.dimension_type();
+        let dimension_name = dimension_types.name_of(*dimension_type_id).unwrap();
 
         let last_death_location = death_loc.0.as_ref().map(|(id, pos)| GlobalPos {
             dimension_name: id.as_str_ident().into(),
@@ -189,8 +216,8 @@ pub(super) fn respawn(
         });
 
         client.write_packet(&RespawnS2c {
-            dimension_type: VarInt(dimension_type.get_value().into()),
-            dimension_name: Ident::new("overworld").unwrap(),
+            dimension_type: VarInt(dimension_type_id.get_value().into()),
+            dimension_name: Ident::new(dimension_name.as_str()).unwrap(),
             hashed_seed: hashed_seed.0,
             game_mode: *game_mode,
             previous_game_mode: prev_game_mode.0.into(),
@@ -200,6 +227,25 @@ pub(super) fn respawn(
             portal_cooldown: VarInt(0), // TODO
             sea_level: VarInt(0),       // TODO
             data_kept: DataKeptFlags::new(),
+        });
+
+        let respawn_position = respawn_position.pos.position;
+
+        crate::teleport::request_teleport(
+            client.as_mut(),
+            teleport_state.as_mut(),
+            &Position(DVec3 {
+                x: respawn_position.x as f64,
+                y: respawn_position.y as f64,
+                z: respawn_position.z as f64,
+            }),
+            velocity,
+            look,
+        );
+
+        client.write_packet(&GameEventS2c {
+            kind: GameEventKind::StartWaitingForLevelChunks,
+            value: 0.0,
         });
     }
 }
@@ -213,8 +259,12 @@ pub(super) fn update_respawn_position(
 ) {
     for (mut client, respawn_pos) in &mut clients {
         client.write_packet(&SetDefaultSpawnPositionS2c {
-            position: respawn_pos.pos,
-            angle: respawn_pos.yaw,
+            position: GlobalPos {
+                dimension_name: respawn_pos.pos.dimension_name.clone().into(),
+                position: respawn_pos.pos.position,
+            },
+            yaw: respawn_pos.yaw,
+            pitch: respawn_pos.pitch,
         });
     }
 }

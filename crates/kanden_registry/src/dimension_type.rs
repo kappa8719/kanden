@@ -10,12 +10,13 @@ use std::ops::{Deref, DerefMut};
 
 use bevy_app::prelude::*;
 use bevy_ecs::prelude::*;
-use serde::{Deserialize, Serialize};
-use tracing::error;
 use kanden_ident::{ident, Ident};
 use kanden_nbt::serde::ser::CompoundSerializer;
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use tracing::error;
 
 use crate::codec::{RegistryCodec, RegistryValue};
+use crate::environment_attribute::EnvironmentAttributeMap;
 use crate::{Registry, RegistryIdx, RegistrySet};
 pub struct DimensionTypePlugin;
 
@@ -33,14 +34,14 @@ impl Plugin for DimensionTypePlugin {
 /// Loads the default dimension types from the registry codec.
 fn load_default_dimension_types(mut reg: ResMut<DimensionTypeRegistry>, codec: Res<RegistryCodec>) {
     let mut helper = move || -> anyhow::Result<()> {
-        for value in codec.registry(DimensionTypeRegistry::KEY) {
-            let mut dimension_type = DimensionType::deserialize(value.element.clone())?;
+        for (name, element) in codec.registry(DimensionTypeRegistry::KEY) {
+            let mut dimension_type = DimensionType::deserialize(element.clone())?;
 
             // HACK: We don't have a lighting engine implemented. To avoid shrouding the
             // world in darkness, give all dimensions the max ambient light.
             dimension_type.ambient_light = 1.0;
 
-            reg.insert(value.name.clone(), dimension_type);
+            reg.insert(name.clone(), dimension_type);
         }
 
         Ok(())
@@ -63,12 +64,11 @@ fn update_dimension_type_registry(
         dimension_types.clear();
 
         dimension_types.extend(reg.iter().map(|(_, name, dim)| {
-            RegistryValue {
-                name: name.into(),
-                element: dim
-                    .serialize(CompoundSerializer)
+            (
+                name.into(),
+                dim.serialize(CompoundSerializer)
                     .expect("failed to serialize dimension type"),
-            }
+            )
         }));
     }
 }
@@ -123,48 +123,44 @@ impl DerefMut for DimensionTypeRegistry {
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
 #[serde(deny_unknown_fields)]
 pub struct DimensionType {
-    pub ambient_light: f32,
-    pub bed_works: bool,
-    pub coordinate_scale: f64,
-    pub effects: DimensionEffects,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub fixed_time: Option<i32>,
-    pub has_ceiling: bool,
-    pub has_raids: bool,
+    #[serde(default)]
+    pub has_fixed_time: bool,
     pub has_skylight: bool,
-    pub height: i32,
-    pub infiniburn: String,
-    pub logical_height: i32,
+    pub has_ceiling: bool,
+    pub coordinate_scale: f64,
     pub min_y: i32,
-    pub monster_spawn_block_light_limit: i32,
+    pub height: i32,
+    pub logical_height: i32,
+    pub infiniburn: String,
+    pub ambient_light: f32,
     pub monster_spawn_light_level: MonsterSpawnLightLevel,
-    pub natural: bool,
-    pub piglin_safe: bool,
-    pub respawn_anchor_works: bool,
-    pub ultrawarm: bool,
+    pub monster_spawn_block_light_limit: i32,
+    #[serde(default)]
+    pub skybox: Skybox,
+    #[serde(default)]
+    pub cardinal_light: CardinalLightType,
+    pub attributes: EnvironmentAttributeMap,
+    pub timelines: String,
 }
 
 impl Default for DimensionType {
     fn default() -> Self {
         Self {
-            ambient_light: 0.0,
-            bed_works: true,
-            coordinate_scale: 1.0,
-            effects: DimensionEffects::default(),
-            fixed_time: None,
-            has_ceiling: false,
-            has_raids: true,
+            has_fixed_time: false,
             has_skylight: true,
-            height: 384,
-            infiniburn: "#minecraft:infiniburn_overworld".into(),
-            logical_height: 384,
+            has_ceiling: false,
+            coordinate_scale: 1.0,
             min_y: -64,
-            monster_spawn_block_light_limit: 0,
+            height: 384,
+            logical_height: 384,
+            infiniburn: String::from("#minecraft:infiniburn_overworld"),
+            ambient_light: 0.0,
             monster_spawn_light_level: MonsterSpawnLightLevel::Int(7),
-            natural: true,
-            piglin_safe: false,
-            respawn_anchor_works: false,
-            ultrawarm: false,
+            monster_spawn_block_light_limit: 0,
+            skybox: Skybox::default(),
+            cardinal_light: CardinalLightType::default(),
+            attributes: EnvironmentAttributeMap::default(),
+            timelines: String::from("#minecraft:in_overworld"),
         }
     }
 }
@@ -202,4 +198,21 @@ impl From<i32> for MonsterSpawnLightLevel {
     fn from(value: i32) -> Self {
         Self::Int(value)
     }
+}
+
+#[derive(Copy, Clone, PartialEq, Debug, Serialize, Deserialize, Default)]
+#[serde(rename_all = "snake_case")]
+pub enum Skybox {
+    #[default]
+    None,
+    Overworld,
+    End,
+}
+
+#[derive(Copy, Clone, PartialEq, Debug, Serialize, Deserialize, Default)]
+#[serde(rename_all = "snake_case")]
+pub enum CardinalLightType {
+    #[default]
+    Default,
+    Nether,
 }

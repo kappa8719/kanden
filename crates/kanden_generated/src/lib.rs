@@ -27,3 +27,11 @@ pub mod chunk_view {
 pub mod status_effects {
     include!(concat!(env!("OUT_DIR"), "/status_effects.rs"));
 }
+
+pub mod data_components {
+    include!(concat!(env!("OUT_DIR"), "/data_components.rs"));
+}
+
+pub mod particles {
+    include!(concat!(env!("OUT_DIR"), "/particles.rs"));
+}
