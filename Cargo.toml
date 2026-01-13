@@ -95,7 +95,7 @@ kanden_server_common = { path = "crates/kanden_server_common", version = "0.2.0-
 kanden_text = { path = "crates/kanden_text", version = "0.2.0-alpha.1" }
 kanden_weather = { path = "crates/kanden_weather", version = "0.2.0-alpha.1" }
 kanden_world_border = { path = "crates/kanden_world_border", version = "0.2.0-alpha.1" }
-lru = "0.12.4"
+lru = "0.16.3"
 noise = "0.9.0"
 num = "0.4.3"
 num-bigint = "0.4.6"
